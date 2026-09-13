@@ -51,11 +51,11 @@ export default function QuickView({ product, onClose }: QuickViewProps) {
 
   return (
     <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 sm:p-6">
-      <div className="absolute inset-0 bg-brown-800/50 backdrop-blur-sm animate-fade-in" onClick={onClose} />
-      <div className="relative bg-cream-50 rounded-sm shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto animate-fade-up">
+      <div className="absolute inset-0 bg-ink/60 backdrop-blur-sm animate-fade-in" onClick={onClose} />
+      <div className="relative bg-ink rounded-sm shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto animate-fade-up text-parchment-50">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-cream-100 hover:bg-cream-200 flex items-center justify-center text-brown-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terracotta-400"
+          className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
           aria-label="Close quick view"
         >
           <X size={18} strokeWidth={1.5} />
@@ -69,36 +69,36 @@ export default function QuickView({ product, onClose }: QuickViewProps) {
 
           {/* Info */}
           <div className="p-6 lg:p-8 flex flex-col">
-            <div className="flex items-start justify-between gap-3 mb-2">
-              <p className="text-xs uppercase tracking-[0.15em] text-terracotta-400">{product.code}</p>
+            <div className="flex items-start justify-start gap-3 mb-2">
+              <p className="text-xs uppercase tracking-[0.15em] text-parchment-100 font-medium">{product.code}</p>
               <button
                 onClick={() => toggleItem(product.code)}
-                className="text-brown-400 hover:text-terracotta-500 transition-colors"
+                className="text-parchment-100/60 hover:text-rose transition-colors"
                 aria-label={isWishlisted(product.code) ? 'Remove from wishlist' : 'Add to wishlist'}
               >
                 <Heart
                   size={20}
                   strokeWidth={1.5}
                   fill={isWishlisted(product.code) ? 'currentColor' : 'none'}
-                  className={isWishlisted(product.code) ? 'text-terracotta-500' : ''}
+                  className={isWishlisted(product.code) ? 'text-rose' : ''}
                 />
               </button>
             </div>
 
-            <h2 className="font-serif text-2xl lg:text-3xl text-brown-800 mb-2">{product.name}</h2>
-            <p className="text-sm text-brown-500 leading-relaxed mb-4">{product.description}</p>
+            <h2 className="font-serif text-2xl lg:text-3xl text-white mb-2">{product.name}</h2>
+            <p className="text-sm text-parchment-100 leading-relaxed mb-4">{product.description}</p>
 
             <div className="flex items-center gap-3 mb-4 flex-wrap">
-              <span className="font-serif text-2xl text-brown-800">
+              <span className="font-serif text-2xl text-white">
                 {product.priceLabel || formatPrice(product.price)}
               </span>
               {product.customisable && (
-                <span className="text-[10px] text-sage-600 flex items-center gap-1 bg-sage-100 px-2 py-1 rounded-sm">
+                <span className="text-[10px] text-sage-200 font-medium flex items-center gap-1 bg-sage-900/30 px-2 py-1 rounded-sm">
                   <Sparkles size={10} /> Custom colours
                 </span>
               )}
               {product.preparationDays && (
-                <span className="text-[10px] text-brown-400 flex items-center gap-1 bg-cream-100 px-2 py-1 rounded-sm">
+                <span className="text-[10px] text-brown-300 font-medium flex items-center gap-1 bg-white/10 px-2 py-1 rounded-sm">
                   <Clock size={10} strokeWidth={1.5} /> Made in {product.preparationDays}
                 </span>
               )}
@@ -107,7 +107,7 @@ export default function QuickView({ product, onClose }: QuickViewProps) {
             {/* Colours */}
             {product.colors && product.colors.length > 0 && (
               <div className="mb-4">
-                <label className="block text-xs font-medium text-brown-600 mb-2">Colours</label>
+                <label className="block text-xs font-semibold text-parchment-100 mb-2">Colours</label>
                 <div className="flex flex-wrap gap-1.5">
                   {product.colors.map((color) => (
                     <button
@@ -115,8 +115,8 @@ export default function QuickView({ product, onClose }: QuickViewProps) {
                       onClick={() => setSelectedColor(color)}
                       className={`px-3 py-1.5 text-xs rounded-sm border transition-all ${
                         selectedColor === color
-                          ? 'bg-brown-700 text-cream-50 border-brown-700'
-                          : 'bg-cream-100 text-brown-600 border-cream-300 hover:border-sage-400'
+                          ? 'bg-white text-ink border-white'
+                          : 'bg-white/10 text-parchment-50 border-white/20 hover:border-sage-400'
                       }`}
                     >
                       {color}
@@ -128,17 +128,17 @@ export default function QuickView({ product, onClose }: QuickViewProps) {
 
             {/* Quantity */}
             <div className="mb-5">
-              <label className="block text-xs font-medium text-brown-600 mb-2">Quantity</label>
-              <div className="flex items-center border border-cream-400 rounded-sm w-fit">
+              <label className="block text-xs font-semibold text-parchment-100 mb-2">Quantity</label>
+              <div className="flex items-center border border-white/20 rounded-sm w-fit">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="px-3 py-2 text-brown-600 hover:text-brown-800"
+                  className="px-3 py-2 text-parchment-50 hover:text-white"
                   aria-label="Decrease quantity"
                 >−</button>
-                <span className="px-3 text-sm text-brown-700 min-w-[36px] text-center">{quantity}</span>
+                <span className="px-3 text-sm text-parchment-50 font-medium min-w-[36px] text-center">{quantity}</span>
                 <button
                   onClick={() => setQuantity(quantity + 1)}
-                  className="px-3 py-2 text-brown-600 hover:text-brown-800"
+                  className="px-3 py-2 text-parchment-50 hover:text-white"
                   aria-label="Increase quantity"
                 >+</button>
               </div>
@@ -146,7 +146,7 @@ export default function QuickView({ product, onClose }: QuickViewProps) {
 
             {/* CTAs */}
             <div className="flex flex-col gap-2 mt-auto">
-              <button onClick={handleAddToCart} className="btn-primary w-full">
+              <button onClick={handleAddToCart} className="bg-parchment-50 text-ink hover:bg-parchment-100 transition-colors w-full py-4 px-6 rounded-sm font-medium flex items-center justify-center gap-2 shadow-soft">
                 <ShoppingBag size={16} />
                 Add to enquiry
               </button>
@@ -159,7 +159,7 @@ export default function QuickView({ product, onClose }: QuickViewProps) {
                 <Link
                   to={`/product/${product.code}`}
                   onClick={onClose}
-                  className="btn-secondary flex-1 text-center"
+                  className="btn-secondary flex-1 text-center bg-white/10 text-white border-white/20 hover:bg-white/20"
                 >
                   View details
                 </Link>

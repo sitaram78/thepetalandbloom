@@ -70,12 +70,20 @@ export default function AdminDashboard() {
           </Reveal>
 
           <Reveal delay={100}>
-            <Link
-              to="/admin/editor"
-              className="btn-primary px-6 py-3 flex items-center justify-center gap-2 text-sm shadow-soft"
-            >
-              <Plus size={18} /> Create New Piece
-            </Link>
+            <div className="flex items-center gap-4">
+              <Link
+                to="/admin/assets"
+                className="btn-secondary px-6 py-3 flex items-center justify-center gap-2 text-sm shadow-soft"
+              >
+                <Palette size={18} /> Studio Visuals
+              </Link>
+              <Link
+                to="/admin/editor"
+                className="btn-primary px-6 py-3 flex items-center justify-center gap-2 text-sm shadow-soft"
+              >
+                <Plus size={18} /> Create New Piece
+              </Link>
+            </div>
           </Reveal>
         </header>
 

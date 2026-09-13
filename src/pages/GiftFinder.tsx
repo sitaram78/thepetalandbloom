@@ -7,6 +7,7 @@ import ProductCard from '@/components/ProductCard';
 import WhatsAppButton from '@/components/WhatsAppButton';
 import { useProducts } from '@/context/ProductContext';
 import { formatPrice } from '@/data/products';
+import { useSiteAssets, getDynamicAsset } from '@/context/SiteAssetsContext';
 import { heroImages } from '@/data/site';
 import { giftFinderMessage } from '@/utils/whatsapp';
 import { trackEvent } from '@/utils/analytics';
@@ -22,7 +23,8 @@ const budgets = [
 ];
 
 export default function GiftFinder() {
-  const { products, loading } = useProducts();
+  const { products, loading: productLoading } = useProducts();
+  const { assets, loading: assetsLoading } = useSiteAssets();
   const [step, setStep] = useState(0);
   const [occasion, setOccasion] = useState('');
   const [recipient, setRecipient] = useState('');
@@ -68,7 +70,7 @@ export default function GiftFinder() {
   const steps = ['Occasion', 'Recipient', 'Budget', 'Results'];
   const canProceed = step === 0 ? !!occasion : step === 1 ? !!recipient : step === 2 ? !!budget : true;
 
-  if (loading) {
+  if (productLoading || assetsLoading) {
     return (
       <div className="min-h-screen bg-parchment-50 flex items-center justify-center">
         <div className="animate-pulse flex flex-col items-center gap-4">
@@ -85,7 +87,7 @@ export default function GiftFinder() {
         label="Gift Finder"
         title={<>Help me choose a gift</>}
         subtitle="Not sure where to start? Answer three quick questions and we'll suggest the perfect bloom."
-        image={heroImages.giftBox}
+        image={getDynamicAsset(assets, 'home_gift_finder')}
       />
 
       <section className="py-16 lg:py-24 bg-parchment-50">
@@ -124,7 +126,7 @@ export default function GiftFinder() {
                     onClick={() => setOccasion(occ)}
                     className={`p-5 rounded-sm border text-center transition-all duration-300 ${
                       occasion === occ
-                        ? 'bg-brown-700 text-cream-50 border-brown-700'
+                        ? 'bg-brown-700 text-parchment-50 border-brown-700'
                         : 'bg-cream-100 text-brown-700 border-cream-300 hover:border-terracotta-400'
                     }`}
                   >
@@ -147,7 +149,7 @@ export default function GiftFinder() {
                     onClick={() => setRecipient(rec)}
                     className={`p-5 rounded-sm border text-center transition-all duration-300 ${
                       recipient === rec
-                        ? 'bg-brown-700 text-cream-50 border-brown-700'
+                        ? 'bg-brown-700 text-parchment-50 border-brown-700'
                         : 'bg-cream-100 text-brown-700 border-cream-300 hover:border-terracotta-400'
                     }`}
                   >
@@ -170,7 +172,7 @@ export default function GiftFinder() {
                     onClick={() => setBudget(b.label)}
                     className={`p-5 rounded-sm border text-center transition-all duration-300 ${
                       budget === b.label
-                        ? 'bg-brown-700 text-cream-50 border-brown-700'
+                        ? 'bg-brown-700 text-parchment-50 border-brown-700'
                         : 'bg-cream-100 text-brown-700 border-cream-300 hover:border-terracotta-400'
                     }`}
                   >

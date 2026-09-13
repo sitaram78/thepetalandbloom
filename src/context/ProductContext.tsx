@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { Product } from '@/data/products';
+import { getCache, setCache, removeCache } from '@/utils/cache';
 
 interface ProductContextType {
   products: Product[];
@@ -22,13 +23,20 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
   const fetchProducts = async () => {
     setLoading(true);
     try {
+      // 1. Try to get from cache first
+      const cached = getCache<Product[]>('products_cache');
+      if (cached) {
+        setProducts(cached);
+        setLoading(false);
+        return;
+      }
+
       const { data, error: supabaseError } = await supabase
         .from('products')
         .select('*');
 
       if (supabaseError) throw supabaseError;
 
-      // Map DB columns to Product interface
       const mappedProducts = (data || []).map(p => ({
         code: p.code,
         name: p.name || 'Unnamed Piece',
@@ -48,6 +56,7 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
       }));
 
       setProducts(mappedProducts);
+      setCache('products_cache', mappedProducts);
       setError(null);
     } catch (err: any) {
       console.error('Error fetching products:', err);
@@ -70,6 +79,7 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
   const getFeatured = () => products.filter(p => p.featured);
 
   const refreshProducts = async () => {
+    removeCache('products_cache');
     await fetchProducts();
   };
 

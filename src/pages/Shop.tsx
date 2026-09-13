@@ -13,6 +13,7 @@ import { buildWhatsAppLink, generalEnquiryMessage } from '@/utils/whatsapp';
 import { trackEvent } from '@/utils/analytics';
 import { useProducts } from '@/context/ProductContext';
 import { supabase } from '@/lib/supabaseClient';
+import { filterProducts } from '@/utils/productSearch';
 
 
 const categoryFilters: { label: string; value: ProductCategory | 'all' }[] = [
@@ -32,7 +33,7 @@ const sortOptions = [
   { label: 'Price: High to Low', value: 'price-desc' },
 ];
 
-export default function Shop() {
+export default function ShopPage() {
   const { products, loading } = useProducts();
   const [searchParams, setSearchParams] = useSearchParams();
   const occasionFilter = searchParams.get('occasion') || '';
@@ -73,63 +74,33 @@ export default function Shop() {
   const activeBudget = budgetFilters.find((b) => b.param === budgetFilter);
 
   const filtered = useMemo(() => {
-    try {
-      let result = products ? [...products] : [];
+    if (!products) return [];
 
-      if (category !== 'all') {
-        result = result.filter((p) => p?.category === category);
-      }
+    // Combine filters into one pass using the utility
+    let result = filterProducts(products, {
+      query: searchQuery,
+      category,
+      occasion: occasionFilter,
+      customOnly,
+    });
 
-      if (occasionFilter) {
-        result = result.filter(
-          (p) => p?.occasions?.some((o) => o?.toLowerCase() === occasionFilter.toLowerCase())
-        );
-      }
-
-      if (activeBudget) {
-        result = result.filter((p) => p?.price >= activeBudget.min && p?.price <= activeBudget.max);
-      }
-
-      if (customOnly) {
-        result = result.filter((p) => p?.customisable);
-      }
-
-      if (searchQuery) {
-        const q = searchQuery.toLowerCase();
-        const budgetMatch = q.match(/under\s*(\d+)/);
-        if (budgetMatch) {
-          const max = parseInt(budgetMatch[1], 10);
-          result = result.filter((p) => p?.price <= max);
-        } else if (q.includes('premium') || q.includes('2000')) {
-          result = result.filter((p) => p?.price >= 2000);
-        } else {
-          result = result.filter((p) => {
-            const haystack = [
-              p?.name, p?.description, p?.code, p?.category,
-              ...(p?.occasions || []),
-              ...(p?.colors || []),
-              formatPrice(p?.price),
-            ].filter(Boolean).join(' ').toLowerCase();
-            return haystack.includes(q);
-          });
-        }
-      }
-
-      if (sort === 'price-asc') {
-        result.sort((a, b) => (a?.price || 0) - (b?.price || 0));
-      } else if (sort === 'price-desc') {
-        result.sort((a, b) => (b?.price || 0) - (a?.price || 0));
-      } else if (sort === 'newest') {
-        result.sort((a, b) => (b?.isNew ? 1 : 0) - (a?.isNew ? 1 : 0));
-      } else {
-        result.sort((a, b) => (b?.featured ? 1 : 0) - (a?.featured ? 1 : 0));
-      }
-
-      return result;
-    } catch (e) {
-      console.error('Filter crash:', e);
-      return [];
+    // Apply budget filter separately as it requires the mapping from data/site
+    if (activeBudget) {
+      result = result.filter((p) => p?.price >= activeBudget.min && p?.price <= activeBudget.max);
     }
+
+    // Sort
+    if (sort === 'price-asc') {
+      result.sort((a, b) => (a?.price || 0) - (b?.price || 0));
+    } else if (sort === 'price-desc') {
+      result.sort((a, b) => (b?.price || 0) - (a?.price || 0));
+    } else if (sort === 'newest') {
+      result.sort((a, b) => (b?.isNew ? 1 : 0) - (a?.isNew ? 1 : 0));
+    } else {
+      result.sort((a, b) => (b?.featured ? 1 : 0) - (a?.featured ? 1 : 0));
+    }
+
+    return result;
   }, [products, category, occasionFilter, activeBudget, customOnly, searchQuery, sort]);
 
   const occasionName = occasions.find((o) => o.filter === occasionFilter)?.name;
@@ -141,6 +112,8 @@ export default function Shop() {
     setCustomOnly(false);
     setSort('featured');
   };
+
+  const hasNoResults = filtered && filtered.length === 0 && searchQuery;
 
   if (loading) {
     return (
@@ -172,9 +145,21 @@ export default function Shop() {
 
       <PageHeader
         label="Shop all"
-        title={occasionName ? `${occasionName} gifts` : activeBudget ? activeBudget.label : searchQuery ? `Search: "${searchQuery}"` : 'The full collection'}
+        title={
+          hasNoResults
+            ? "No blooms found"
+            : occasionName
+            ? `${occasionName} gifts`
+            : activeBudget
+            ? activeBudget.label
+            : searchQuery
+            ? `Search: "${searchQuery}"`
+            : 'The full collection'
+        }
         subtitle={
-          occasionName
+          hasNoResults
+            ? `We couldn't find any pieces matching "${searchQuery}". Try a different keyword or explore our full studio.`
+            : occasionName
             ? `Handmade crochet blooms and gifts for ${occasionName.toLowerCase()}.`
             : activeBudget
             ? `Handmade pieces ${activeBudget.label.toLowerCase()}.`
@@ -269,9 +254,9 @@ export default function Shop() {
       {/* Products */}
       <div className="container-lux pb-24">
         <p className="text-sm text-ink-light/60 mb-10 font-light">
-          {filtered.length} {filtered.length === 1 ? 'piece' : 'pieces'}
+          {filtered?.length || 0} { (filtered?.length || 0) === 1 ? 'piece' : 'pieces'}
         </p>
-        {filtered.length > 0 ? (
+        {filtered && filtered.length > 0 ? (
           <ProductGrid products={filtered} columns={3} />
         ) : (
           <Reveal className="text-center py-24 max-w-md mx-auto">

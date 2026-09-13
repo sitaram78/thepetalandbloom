@@ -75,7 +75,30 @@ export default function ProductDetail() {
   }
 
   if (!product) {
-    return <Navigate to="/shop" replace />;
+    return (
+      <div className="min-h-screen bg-parchment-50 flex flex-col items-center justify-center p-6 text-center">
+        <Reveal>
+          <div className="w-20 h-20 bg-silk rounded-full flex items-center justify-center mx-auto mb-6">
+            <Search size={32} className="text-ink opacity-30" />
+          </div>
+          <h1 className="heading-serif text-4xl text-ink mb-4">Piece not found</h1>
+          <p className="text-ink-light max-w-md mx-auto mb-10 leading-relaxed">
+            The bloom you're looking for might have found a new home or is currently being hand-sculpted in our studio.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link to="/shop" className="btn-primary px-8 py-3">
+              Explore the Studio
+            </Link>
+            <WhatsAppButton
+              message={generalEnquiryMessage()}
+              label="Ask the Studio Assistant"
+              variant="outline"
+              className="px-8 py-3"
+            />
+          </div>
+        </Reveal>
+      </div>
+    );
   }
 
   const relatedProducts = products

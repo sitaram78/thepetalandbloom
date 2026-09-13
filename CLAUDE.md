@@ -19,13 +19,16 @@ The project is a Vite-powered React application using TypeScript and Tailwind CS
     - `WishlistContext`: Manages saved items.
     - `QuickViewContext`: Controls the product quick-view modal.
     - `ProductContext`: Manages product catalog and lookup logic.
+    - `SiteAssetsContext`: Manages dynamic site-wide background images and brand assets via Supabase Storage.
 - **Routing**: Single Page Application (SPA) architecture using `react-router-dom`.
 
 ### Component Hierarchy
 - `src/components`: Shared UI building blocks (e.g., `ProductCard`, `Navbar`, `Footer`).
 - `src/pages`: Top-level view components.
-- `src/hooks`: Custom logic (e.g., `useReveal` for scroll-triggered animations, `useRecentlyViewed`).
+- `src/hooks`: Custom logic (e.g., `useReveal` for scroll-triggered animations, `useRecentlyViewed`, `useClickOutside`).
 - `src/utils`: Helper functions for WhatsApp link generation and analytics.
+- `src/utils/productSearch.ts`: Centralized product filtering and search logic used across the application.
+- `src/utils/cache.ts`: LocalStorage caching utility with TTL for performance optimization.
 
 ### Visual Identity (The Botanical Studio)
 The project implements a "Sophisticated Minimalist" luxury experience:
@@ -37,4 +40,6 @@ The project implements a "Sophisticated Minimalist" luxury experience:
 - [x] **Stability**: Fixing routing, product rendering, and asset paths.
 - [x] **Dynamic Infrastructure**: Moving nav/categories to Supabase.
 - [x] **Visual Overhaul**: Implementing the "High-End Atelier" minimalist design.
+- [x] **Asset Management**: Implementing dynamic site background photos via Supabase Storage and Admin Panel.
+- [x] **Performance**: Implementing hybrid caching for products and assets to reduce API latency.
 - [ ] **Studio Experience**: (Skipped) Gift Concierge Quiz, Studio Secrets, and Mood Discovery.

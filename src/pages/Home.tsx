@@ -7,6 +7,7 @@ import ProductCard from '@/components/ProductCard';
 import WhatsAppButton from '@/components/WhatsAppButton';
 import SEO from '@/components/SEO';
 import { formatPrice } from '@/data/products';
+import { useSiteAssets, getDynamicAsset } from '@/context/SiteAssetsContext';
 import {
   occasions, trustStrip, bouquetTiers, addOns, giftingOccasions,
   instagramPosts, heroImages, brandInfo, budgetFilters,
@@ -25,15 +26,16 @@ const occasionIcons: Record<string, any> = {
 };
 
 export default function Home() {
-  const { products, getBestsellers, loading } = useProducts();
+  const { products, getBestsellers, loading: productLoading } = useProducts();
+  const { assets, loading: assetsLoading } = useSiteAssets();
   const bestsellers = getBestsellers();
-  const featuredProduct = products.find((p) => p.code === 'TPB-BQ-003');
+  const featuredProduct = products ? products.find((p) => p.code === 'TPB-BQ-003') : undefined;
 
   useEffect(() => {
     trackEvent('homepage_view');
   }, []);
 
-  if (loading) {
+  if (productLoading || assetsLoading) {
     return (
       <div className="min-h-screen bg-parchment-50 flex items-center justify-center">
         <div className="animate-pulse flex flex-col items-center gap-4">
@@ -63,10 +65,11 @@ export default function Home() {
       <section className="relative min-h-screen flex items-center justify-center bg-parchment-50">
         <div className="absolute inset-0">
           <img
-            src={heroImages.primary}
+            src={getDynamicAsset(assets, 'home_hero_primary')}
             alt="Handmade crochet bouquet"
             className="w-full h-full object-cover animate-gentle-zoom"
           />
+          <div className="absolute inset-0 bg-black/10 mix-blend-multiply" />
           <div className="absolute inset-0 bg-gradient-to-b from-parchment-50/30 via-transparent to-parchment-50" />
         </div>
 
@@ -163,7 +166,7 @@ export default function Home() {
             <Reveal className="lg:col-span-7">
               <div className="relative aspect-[4/5] overflow-hidden rounded-sm bg-silk shadow-soft">
                 <img
-                  src={heroImages.secondary}
+                  src={getDynamicAsset(assets, 'home_hero_secondary')}
                   alt="Custom Bouquet Process"
                   className="w-full h-full object-cover transition-transform duration-1000 hover:scale-105"
                 />
@@ -200,8 +203,8 @@ export default function Home() {
           <div className="text-center max-w-3xl mx-auto mb-20">
             <Reveal>
               <p className="section-label text-rose mb-6">The Detail</p>
-              <h2 className="heading-serif text-5xl lg:text-7xl mb-8">Stitch by Stitch.</h2>
-              <p className="text-parchment-100/60 text-xl leading-relaxed font-light">
+              <h2 className="heading-serif text-5xl lg:text-7xl mb-8 text-white">Stitch by Stitch.</h2>
+              <p className="text-parchment-50/90 text-xl leading-relaxed font-light">
                 Luxury is found in the details. Every petal is sculpted by hand, ensuring that no two blooms are identical — just like the people they are given to.
               </p>
             </Reveal>
@@ -209,19 +212,19 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
             <Reveal delay={100}>
               <div className="aspect-[4/5] overflow-hidden rounded-sm group relative shadow-soft">
-                <img src={heroImages.hands} alt="Hand crafting" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
+                <img src={getDynamicAsset(assets, 'home_hero_hands')} alt="Hand crafting" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
                 <div className="absolute inset-0 bg-forest/20 group-hover:bg-transparent transition-all duration-500" />
               </div>
             </Reveal>
             <Reveal delay={200}>
               <div className="aspect-[4/5] overflow-hidden rounded-sm group relative mt-16 shadow-soft">
-                <img src={heroImages.texture} alt="Yarn detail" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
+                <img src={getDynamicAsset(assets, 'home_hero_texture')} alt="Yarn detail" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
                 <div className="absolute inset-0 bg-forest/20 group-hover:bg-transparent transition-all duration-500" />
               </div>
             </Reveal>
             <Reveal delay={300}>
               <div className="aspect-[4/5] overflow-hidden rounded-sm group relative shadow-soft">
-                <img src={heroImages.yarn} alt="Yarn palette" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
+                <img src={getDynamicAsset(assets, 'home_hero_yarn')} alt="Yarn palette" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
                 <div className="absolute inset-0 bg-forest/20 group-hover:bg-transparent transition-all duration-500" />
               </div>
             </Reveal>

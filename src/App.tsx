@@ -4,6 +4,7 @@ import { WishlistProvider } from '@/context/WishlistContext';
 import { QuickViewProvider } from '@/context/QuickViewContext';
 import { ProductProvider } from '@/context/ProductContext';
 import { NotificationProvider } from '@/context/NotificationContext';
+import { SiteAssetsProvider } from '@/context/SiteAssetsContext';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import CartDrawer from '@/components/CartDrawer';
@@ -34,6 +35,7 @@ import AdminLogin from '@/pages/AdminLogin';
 import AdminRoute from '@/components/AdminRoute';
 import AdminDashboard from '@/pages/AdminDashboard';
 import AdminEditor from '@/pages/AdminEditor';
+import AdminAssets from '@/pages/admin/AdminAssets';
 import AdminSettings from '@/pages/admin/AdminSettings';
 import NotFound from '@/pages/NotFound';
 
@@ -79,6 +81,7 @@ function AppContent() {
           <Route element={<AdminRoute />}>
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/editor" element={<AdminEditor />} />
+            <Route path="/admin/assets" element={<AdminAssets />} />
             <Route path="/admin/migrate" element={<MigrationPage />} />
             <Route path="/admin/settings" element={<AdminSettings />} />
           </Route>
@@ -104,8 +107,10 @@ function App() {
           <ProductProvider>
             <CartProvider>
               <QuickViewProvider>
-                <ScrollToTop />
-                <AppContent />
+                <SiteAssetsProvider>
+                  <ScrollToTop />
+                  <AppContent />
+                </SiteAssetsProvider>
               </QuickViewProvider>
             </CartProvider>
           </ProductProvider>

@@ -2,12 +2,15 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Search, ShoppingBag, MessageCircle, Menu, X, XCircle, Heart } from 'lucide-react';
 import { brandInfo } from '@/data/site';
-import { products, formatPrice } from '@/data/products';
+import { formatPrice } from '@/data/products';
 import { useCart } from '@/context/CartContext';
 import { useWishlist } from '@/context/WishlistContext';
+import { useProducts } from '@/context/ProductContext';
 import { buildWhatsAppLink, generalEnquiryMessage } from '@/utils/whatsapp';
 import { trackEvent } from '@/utils/analytics';
 import { supabase } from '@/lib/supabaseClient';
+import { useClickOutside } from '@/hooks/useClickOutside';
+import { filterProducts } from '@/utils/productSearch';
 
 
 export default function Navbar() {
@@ -20,7 +23,9 @@ export default function Navbar() {
   const navigate = useNavigate();
   const { totalItems, openCart } = useCart();
   const { count: wishlistCount } = useWishlist();
+  const { products } = useProducts();
   const searchRef = useRef<HTMLInputElement>(null);
+  const searchContainerRef = useClickOutside(() => setSearchOpen(false));
 
   useEffect(() => {
     async function fetchNav() {
@@ -57,6 +62,18 @@ export default function Navbar() {
   }, [mobileOpen]);
 
   useEffect(() => {
+    if (searchOpen) {
+      const handleClickOutside = (event: MouseEvent) => {
+        if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
+          setSearchOpen(false);
+        }
+      };
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [searchOpen]);
+
+  useEffect(() => {
     if (searchOpen && searchRef.current) {
       searchRef.current.focus();
     }
@@ -65,29 +82,12 @@ export default function Navbar() {
   const searchResults = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     if (!q || q.length < 2) return [];
-    
-    // Check for budget queries like "under 500"
-    const budgetMatch = q.match(/under\s*(\d+)/);
-    if (budgetMatch) {
-      const max = parseInt(budgetMatch[1], 10);
-      return products.filter((p) => p.price <= max).slice(0, 6);
-    }
-    if (q.includes('premium') || q.includes('2000') || q.includes('expensive')) {
-      return products.filter((p) => p.price >= 2000).slice(0, 6);
-    }
 
-    return products
-      .filter((p) => {
-        const haystack = [
-          p.name, p.description, p.code, p.category,
-          ...(p.occasions || []),
-          ...(p.colors || []),
-          formatPrice(p.price),
-        ].join(' ').toLowerCase();
-        return haystack.includes(q);
-      })
-      .slice(0, 6);
-  }, [searchQuery]);
+    // Use the shared filter utility to maintain consistency with the Shop page
+    return filterProducts(products || [], {
+      query: q,
+    }).slice(0, 6);
+  }, [searchQuery, products]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,10 +104,12 @@ export default function Navbar() {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          scrolled
+        className={`fixed top-0 left-0 right-0 z-50 ${
+          searchOpen
+            ? 'bg-parchment-50 shadow-sm'
+            : 'transition-all duration-500 ' + (scrolled
             ? 'glass-panel shadow-sm'
-            : 'bg-parchment-50/40 backdrop-blur-sm'
+            : 'bg-parchment-50/40 backdrop-blur-sm')
         }`}
       >
         <nav className="container-lux flex items-center justify-between h-16 lg:h-20">
@@ -189,79 +191,98 @@ export default function Navbar() {
 
         {/* Search bar with live results */}
         {searchOpen && (
-          <div className="absolute top-full left-0 right-0 glass-panel border-t border-silk shadow-xl animate-fade-in">
-            <div className="container-lux py-6">
-              <form onSubmit={handleSearchSubmit}>
-                <div className="relative">
-                  <input
-                    ref={searchRef}
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search for a bloom, an occasion, or a mood..."
-                    className="w-full bg-transparent border-b border-silk pb-3 pr-8 text-ink placeholder-ink/30 focus:outline-none focus:border-rose font-serif text-xl transition-colors duration-300"
-                  />
-                  {searchQuery && (
+          <>
+            <div
+              className="fixed inset-0 z-40 bg-ink/30 animate-fade-in"
+              onClick={() => setSearchOpen(false)}
+            />
+            <div
+              ref={searchContainerRef}
+              className="absolute top-full left-0 right-0 bg-parchment-50 border-t border-silk shadow-2xl animate-fade-in z-50"
+            >
+              <div className="container-lux py-6">
+                <form onSubmit={handleSearchSubmit} className="relative">
+                  <div className="relative flex items-center gap-3">
+                    <input
+                      ref={searchRef}
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Search for a bloom, an occasion, or a mood..."
+                      className="w-full bg-transparent border-b border-silk pb-3 pr-12 text-ink placeholder-ink/40 focus:outline-none focus:border-rose font-serif text-xl transition-colors duration-300"
+                    />
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                      {searchQuery && (
+                        <button
+                          type="button"
+                          onClick={() => setSearchQuery('')}
+                          className="text-ink-light/50 hover:text-ink transition-colors"
+                          aria-label="Clear search"
+                        >
+                          <XCircle size={20} />
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => setSearchOpen(false)}
+                        className="text-ink-light hover:text-rose transition-colors"
+                        aria-label="Close search"
+                      >
+                        <X size={20} strokeWidth={1.5} />
+                      </button>
+                    </div>
+                  </div>
+                </form>
+
+                {/* Live results */}
+                {searchResults.length > 0 && (
+                  <div className="mt-4 space-y-1">
+                    <p className="text-[10px] uppercase tracking-wider text-brown-400 mb-2">Products</p>
+                    {searchResults.map((product) => (
+                      <Link
+                        key={product.code}
+                        to={`/product/${product.code}`}
+                        onClick={() => { setSearchOpen(false); setSearchQuery(''); }}
+                        className="flex items-center gap-3 p-2 rounded-sm hover:bg-silk/50 transition-colors"
+                      >
+                        <div className="w-12 h-14 overflow-hidden rounded-sm bg-cream-200 flex-shrink-0">
+                          <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-serif text-base text-ink truncate">{product.name}</p>
+                          <p className="text-xs text-brown-400 truncate">{product.description}</p>
+                        </div>
+                        <span className="text-sm font-medium text-rose flex-shrink-0">
+                          {product.priceLabel || formatPrice(product.price)}
+                        </span>
+                      </Link>
+                    ))}
                     <button
-                      type="button"
-                      onClick={() => setSearchQuery('')}
-                      className="absolute right-0 top-1 text-ink-light/50 hover:text-ink transition-colors"
-                      aria-label="Clear search"
+                      onClick={handleSearchSubmit}
+                      className="text-sm text-rose hover:text-rose mt-2 link-underline"
                     >
-                      <XCircle size={20} />
+                      See all results →
                     </button>
-                  )}
-                </div>
-              </form>
+                  </div>
+                )}
 
-              {/* Live results */}
-              {searchResults.length > 0 && (
-                <div className="mt-4 space-y-1">
-                  <p className="text-[10px] uppercase tracking-wider text-brown-400 mb-2">Products</p>
-                  {searchResults.map((product) => (
-                    <Link
-                      key={product.code}
-                      to={`/product/${product.code}`}
-                      onClick={() => { setSearchOpen(false); setSearchQuery(''); }}
-                      className="flex items-center gap-3 p-2 rounded-sm hover:bg-cream-100 transition-colors"
+                {/* Empty state */}
+                {searchQuery.trim().length >= 2 && searchResults.length === 0 && (
+                  <div className="mt-4 text-center py-6">
+                    <p className="font-serif text-lg text-ink-light">Can't find what you're looking for?</p>
+                    <a
+                      href={buildWhatsAppLink(generalEnquiryMessage())}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-rose hover:text-rose mt-2 inline-block link-underline"
                     >
-                      <div className="w-12 h-14 overflow-hidden rounded-sm bg-cream-200 flex-shrink-0">
-                        <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-serif text-base text-ink truncate">{product.name}</p>
-                        <p className="text-xs text-brown-400 truncate">{product.description}</p>
-                      </div>
-                      <span className="text-sm font-medium text-rose flex-shrink-0">
-                        {product.priceLabel || formatPrice(product.price)}
-                      </span>
-                    </Link>
-                  ))}
-                  <button
-                    onClick={handleSearchSubmit}
-                    className="text-sm text-rose hover:text-rose mt-2 link-underline"
-                  >
-                    See all results →
-                  </button>
-                </div>
-              )}
-
-              {/* Empty state */}
-              {searchQuery.trim().length >= 2 && searchResults.length === 0 && (
-                <div className="mt-4 text-center py-6">
-                  <p className="font-serif text-lg text-ink-light">Can't find what you're looking for?</p>
-                  <a
-                    href={buildWhatsAppLink(generalEnquiryMessage())}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-rose hover:text-rose mt-2 inline-block link-underline"
-                  >
-                    Talk to us on WhatsApp →
-                  </a>
-                </div>
-              )}
+                      Talk to us on WhatsApp →
+                    </a>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          </>
         )}
       </header>
 
