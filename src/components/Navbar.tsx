@@ -9,6 +9,7 @@ import { useProducts } from '@/context/ProductContext';
 import { buildWhatsAppLink, generalEnquiryMessage } from '@/utils/whatsapp';
 import { trackEvent } from '@/utils/analytics';
 import { supabase } from '@/lib/supabaseClient';
+import { getCache, setCache } from '@/utils/cache';
 import { useClickOutside } from '@/hooks/useClickOutside';
 import { filterProducts } from '@/utils/productSearch';
 
@@ -29,6 +30,13 @@ export default function Navbar() {
 
   useEffect(() => {
     async function fetchNav() {
+      // 1. Try to get from cache first
+      const cached = getCache<{ label: string; path: string }[]>( 'nav_links_cache');
+      if (cached) {
+        setNavLinks(cached);
+        return;
+      }
+
       const { data, error } = await supabase
         .from('navigation_links')
         .select('label, path')
@@ -37,6 +45,7 @@ export default function Navbar() {
 
       if (!error && data) {
         setNavLinks(data);
+        setCache('nav_links_cache', data);
       }
     }
     fetchNav();
@@ -60,18 +69,6 @@ export default function Navbar() {
       document.body.style.overflow = '';
     };
   }, [mobileOpen]);
-
-  useEffect(() => {
-    if (searchOpen) {
-      const handleClickOutside = (event: MouseEvent) => {
-        if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
-          setSearchOpen(false);
-        }
-      };
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
-    }
-  }, [searchOpen]);
 
   useEffect(() => {
     if (searchOpen && searchRef.current) {

@@ -8,11 +8,6 @@ interface SiteAsset {
   image_url: string;
 }
 
-interface SiteAsset {
-  section_key: string;
-  image_url: string;
-}
-
 interface SiteAssetsContextType {
   assets: Record<string, string>;
   loading: boolean;
@@ -82,6 +77,7 @@ export function SiteAssetsProvider({ children }: { children: React.ReactNode }) 
       }
 
       setAssets((prev) => ({ ...prev, [key]: url }));
+      removeCache('site_assets_cache');
       return { error: null };
     } catch (error: any) {
       console.error(`Asset Update Error for ${key}:`, error);

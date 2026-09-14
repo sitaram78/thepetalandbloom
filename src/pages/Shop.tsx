@@ -12,6 +12,7 @@ import { occasions, heroImages, budgetFilters, giftingOccasions } from '@/data/s
 import { buildWhatsAppLink, generalEnquiryMessage } from '@/utils/whatsapp';
 import { trackEvent } from '@/utils/analytics';
 import { useProducts } from '@/context/ProductContext';
+import { getCache, setCache } from '@/utils/cache';
 import { supabase } from '@/lib/supabaseClient';
 import { filterProducts } from '@/utils/productSearch';
 
@@ -47,13 +48,22 @@ export default function ShopPage() {
 
   useEffect(() => {
     async function fetchCategories() {
+      // 1. Try to get from cache first
+      const cached = getCache<{ label: string; value: string }[]>('categories_cache');
+      if (cached) {
+        setCategories(cached);
+        return;
+      }
+
       const { data, error } = await supabase
         .from('categories')
         .select('name, slug')
         .order('display_order', { ascending: true });
 
       if (!error && data) {
-        setCategories(data.map(c => ({ label: c.name, value: c.slug })));
+        const mapped = data.map(c => ({ label: c.name, value: c.slug }));
+        setCategories(mapped);
+        setCache('categories_cache', mapped);
       }
     }
     fetchCategories();
