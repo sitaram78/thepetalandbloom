@@ -29,9 +29,27 @@ const occasionIcons: Record<string, any> = {
 
 // Mapping for organic occasion blobs
 const OCCASION_BLOBS = [
-  { name: 'Anniversaries', count: '18 pieces', color: 'bg-rose-400', textColor: 'text-rose-900' },
-  { name: 'Just because', count: '24 pieces', color: 'bg-sage-400', textColor: 'text-sage-900' },
-  { name: 'New homes', count: '12 pieces', color: 'bg-bark', textColor: 'text-linen' },
+  {
+    name: 'Anniversaries',
+    count: '18 pieces',
+    slug: 'Anniversary',
+    image: 'https://images.pexels.com/photos/36399728/pexels-photo-36399728.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+    color: 'bg-rose-400'
+  },
+  {
+    name: 'Just because',
+    count: '24 pieces',
+    slug: 'Just Because',
+    image: 'https://images.pexels.com/photos/17555771/pexels-photo-17555771.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+    color: 'bg-sage-400'
+  },
+  {
+    name: 'Friendship',
+    count: '12 pieces',
+    slug: 'Friendship', // Using Friendship as a proxy for 'New homes' since it's in site.ts
+    image: 'https://images.pexels.com/photos/16536447/pexels-photo-16536447.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+    color: 'bg-pink-400'
+  },
 ];
 
 export default function Home() {
@@ -164,15 +182,24 @@ export default function Home() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-12">
             {OCCASION_BLOBS.map((blob, i) => (
               <Reveal key={blob.name} delay={i * 100}>
-                <div className="group cursor-pointer">
+                <Link
+                  to={`/shop?occasion=${blob.slug}`}
+                  className="group block"
+                >
                   <div
-                    className={`aspect-square ${blob.color} rounded-[40%_60%_70%_30%/40%_50%_60%_50%] transition-all duration-500 group-hover:scale-105 shadow-soft`}
-                  />
+                    className={`aspect-square ${blob.color} rounded-[40%_60%_70%_30%/40%_50%_60%_50%] transition-all duration-500 group-hover:scale-105 shadow-soft overflow-hidden relative`}
+                  >
+                    <img
+                      src={blob.image}
+                      alt={blob.name}
+                      className="w-full h-full object-cover mix-blend-multiply opacity-80 group-hover:opacity-100 transition-opacity duration-500"
+                    />
+                  </div>
                   <div className="mt-8 flex items-baseline justify-between">
                     <h3 className="font-serif text-2xl text-bark">{blob.name}</h3>
                     <span className="text-xs text-ink-light font-light">{blob.count}</span>
                   </div>
-                </div>
+                </Link>
               </Reveal>
             ))}
           </div>
@@ -209,30 +236,9 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
-            {products?.slice(0, 3).map((product, i) => (
-              <Reveal key={product.code} delay={i * 100}>
-                <div className="group">
-                  <div className="relative aspect-[4/5] overflow-hidden rounded-atelier-img shadow-soft bg-canvas">
-                    <img
-                      src={product.images[0]}
-                      alt={product.name}
-                      className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
-                    />
-                    {product.customisable && (
-                      <span className="absolute top-4 left-4 bg-moss text-linen text-[10px] uppercase tracking-widest px-3 py-1 rounded-full font-medium">
-                        Customisable
-                      </span>
-                    )}
-                    <div className="absolute inset-x-4 bottom-4 p-4 bg-linen rounded-sm text-center text-sm font-medium translate-y-12 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 shadow-lg">
-                      Add to bag — {formatPrice(product.price)}
-                    </div>
-                  </div>
-                  <div className="mt-6 flex justify-between items-baseline">
-                    <h3 className="font-serif text-2xl text-bark">{product.name}</h3>
-                    <span className="text-xs text-ink-light font-light">{product.code}</span>
-                  </div>
-                  <p className="font-serif text-xl text-rose mt-1">{formatPrice(product.price)}</p>
-                </div>
+            {products?.slice(0, 3).map((product) => (
+              <Reveal key={product.code}>
+                <ProductCard product={product} />
               </Reveal>
             ))}
           </div>
