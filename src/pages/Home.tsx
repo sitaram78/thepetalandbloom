@@ -18,6 +18,7 @@ import {
 import { customOrderMessage } from '@/utils/whatsapp';
 import { trackEvent } from '@/utils/analytics';
 import { useProducts } from '@/context/ProductContext';
+import { useCart } from '@/context/CartContext';
 
 const trustIcons: Record<string, any> = {
   Heart, Clock, Palette, Truck, Gift,
@@ -55,7 +56,10 @@ const OCCASION_BLOBS = [
 export default function Home() {
   const { products, getBestsellers, loading: productLoading } = useProducts();
   const { assets, loading: assetsLoading } = useSiteAssets();
+  const { addItem } = useCart();
   const [seasonCategory, setSeasonCategory] = useState<string>('All');
+  const [featuredImageIndex, setFeaturedImageIndex] = useState(0);
+  const [featuredSelectedColor, setFeaturedSelectedColor] = useState('');
   const bestsellers = getBestsellers();
   const featuredProduct = products ? products.find((p) => p.code === 'TPB-BQ-003') : undefined;
 
@@ -271,17 +275,21 @@ export default function Home() {
               <div className="relative aspect-[4/5] overflow-hidden rounded-atelier-img bg-linen shadow-soft">
                 {featuredProduct && (
                   <img
-                    src={featuredProduct.images[0]}
+                    src={featuredProduct.images[featuredImageIndex]}
                     alt={featuredProduct.name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transition-opacity duration-500"
                   />
                 )}
               </div>
               <div className="flex gap-4 mt-6">
                 {featuredProduct?.images.slice(0, 3).map((img, i) => (
-                  <div key={i} className={`w-20 h-20 rounded-sm overflow-hidden border-2 ${i === 0 ? 'border-rose' : 'border-transparent'}`}>
+                  <button
+                    key={i}
+                    onClick={() => setFeaturedImageIndex(i)}
+                    className={`w-20 h-20 rounded-sm overflow-hidden border-2 transition-all ${featuredImageIndex === i ? 'border-rose scale-105' : 'border-transparent opacity-70 hover:opacity-100'}`}
+                  >
                     <img src={img} className="w-full h-full object-cover" alt="" />
-                  </div>
+                  </button>
                 ))}
               </div>
             </Reveal>
@@ -297,24 +305,41 @@ export default function Home() {
                 </div>
 
                 <div className="space-y-4">
-                  <p className="text-xs uppercase tracking-wider text-ink font-medium">Size</p>
+                  <p className="text-xs uppercase tracking-wider text-ink font-medium">Colour</p>
                   <div className="flex flex-wrap gap-3">
-                    {['Petite · 5 stems', 'Classic · 7 stems', 'Grand · 11 stems'].map((size, i) => (
-                      <span
-                        key={size}
-                        className={`px-4 py-2 rounded-full text-sm border transition-all ${i === 1 ? 'bg-bark text-linen border-bark' : 'border-canvas-line text-ink-light hover:border-rose'}`}
+                    {featuredProduct?.colors?.map((color) => (
+                      <button
+                        key={color}
+                        onClick={() => setFeaturedSelectedColor(color)}
+                        className={`px-4 py-2 rounded-full text-sm border transition-all ${featuredSelectedColor === color ? 'bg-bark text-linen border-bark' : 'border-canvas-line text-ink-light hover:border-rose'}`}
                       >
-                        {size}
-                      </span>
+                        {color}
+                      </button>
                     ))}
                   </div>
                 </div>
 
                 <div className="space-y-3">
-                  <AtelierButton variant="primary" className="w-full justify-center py-4">
+                  <AtelierButton
+                    variant="primary"
+                    className="w-full justify-center py-4"
+                    onClick={() => {
+                      if (featuredProduct) {
+                        addItem(featuredProduct, { color: featuredSelectedColor || undefined, quantity: 1 });
+                      }
+                    }}
+                  >
                     Add to bag
                   </AtelierButton>
-                  <AtelierButton variant="ghost" className="w-full justify-center py-4">
+                  <AtelierButton
+                    variant="ghost"
+                    className="w-full justify-center py-4"
+                    onClick={() => {
+                      if (featuredProduct) {
+                        window.open(`https://wa.me/${brandInfo.whatsappNumber}?text=${encodeURIComponent(customOrderMessage(featuredProduct))}`, '_blank');
+                      }
+                    }}
+                  >
                     Add a handwritten note
                   </AtelierButton>
                 </div>
