@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { Instagram, MessageCircle, Mail, Clock, Send } from 'lucide-react';
-import PageHeader from '@/components/PageHeader';
 import Reveal from '@/components/Reveal';
 import WhatsAppButton from '@/components/WhatsAppButton';
+import AtelierButton from '@/components/AtelierButton';
 import { brandInfo, heroImages } from '@/data/site';
 import { buildWhatsAppLink, generalEnquiryMessage } from '@/utils/whatsapp';
+import SEO from '@/components/SEO';
 
 export default function Contact() {
   const [name, setName] = useState('');
@@ -26,34 +27,57 @@ export default function Contact() {
   };
 
   return (
-    <div>
-      <PageHeader
-        label="Contact"
-        title={<>Start an order</>}
-        subtitle="Message us on WhatsApp for the fastest response, or send us an enquiry below. We typically reply within a few hours during business hours."
-        image={heroImages.secondary}
+    <div className="bg-linen min-h-screen">
+      <SEO
+        title="Contact the Studio — The Petal & Bloom"
+        description="Message us on WhatsApp for the fastest response, or send us an enquiry. We are here to help you find the perfect bloom."
+        canonicalPath="/contact"
       />
 
-      <section className="py-16 lg:py-24 bg-cream-50">
+      {/* Atelier Contact Header */}
+      <section className="pt-16 pb-12 lg:pt-24 lg:pb-20">
+        <div className="container-lux grid grid-cols-1 lg:grid-cols-12 gap-12 items-end">
+          <div className="lg:col-span-7">
+            <span className="font-serif italic text-sm text-rose mb-3 block uppercase tracking-widest">Get in touch</span>
+            <h1 className="font-serif text-4xl sm:text-5xl lg:text-7xl text-bark leading-tight mb-6">
+              Start an order, <br />or just say hello.
+            </h1>
+            <p className="text-ink-light text-base sm:text-lg max-w-2xl leading-relaxed">
+              Message us on WhatsApp for the fastest response, or send us an enquiry below. We typically reply within a few hours during business hours.
+            </p>
+          </div>
+          <div className="lg:col-span-5">
+            <div className="aspect-[16/9] rounded-atelier-img overflow-hidden shadow-soft">
+              <img
+                src={heroImages.secondary}
+                alt="Studio contact"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 lg:py-24 bg-linen">
         <div className="container-lux">
-          <div className="grid lg:grid-cols-2 gap-10 lg:gap-16">
+          <div className="grid lg:grid-cols-2 gap-16 items-start">
             {/* Contact methods */}
             <Reveal>
-              <h2 className="heading-serif text-3xl mb-6">Get in touch</h2>
-              <div className="space-y-5">
+              <h2 className="font-serif text-3xl text-bark mb-8">Talk to the studio</h2>
+              <div className="space-y-4">
                 {/* WhatsApp */}
-                <div className="flex items-start gap-4 p-5 bg-cream-100 rounded-sm">
-                  <div className="w-11 h-11 rounded-full bg-[#25D366]/10 flex items-center justify-center flex-shrink-0">
-                    <MessageCircle size={20} className="text-[#25D366]" strokeWidth={1.5} />
+                <div className="flex items-center gap-5 p-6 bg-canvas rounded-atelier-panel border border-canvas-line transition-all duration-300 hover:border-rose/40">
+                  <div className="w-12 h-12 rounded-full bg-moss/10 flex items-center justify-center flex-shrink-0 text-moss">
+                    <MessageCircle size={22} strokeWidth={1.5} />
                   </div>
-                  <div>
-                    <h3 className="font-serif text-lg text-brown-800">WhatsApp</h3>
-                    <p className="text-sm text-brown-400 mt-1">The fastest way to reach us. Order, enquire, or ask anything.</p>
+                  <div className="flex-1">
+                    <h3 className="font-serif text-lg text-bark">WhatsApp</h3>
+                    <p className="text-sm text-ink-light mt-1">The fastest way to reach us. Order, enquire, or ask anything.</p>
                     <a
                       href={buildWhatsAppLink(generalEnquiryMessage())}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm text-terracotta-500 hover:text-terracotta-600 mt-2 inline-block link-underline"
+                      className="text-sm text-rose hover:text-rose-deep mt-2 inline-block font-medium link-underline"
                     >
                       Message on WhatsApp →
                     </a>
@@ -61,18 +85,18 @@ export default function Contact() {
                 </div>
 
                 {/* Instagram */}
-                <div className="flex items-start gap-4 p-5 bg-cream-100 rounded-sm">
-                  <div className="w-11 h-11 rounded-full bg-rose-100 flex items-center justify-center flex-shrink-0">
-                    <Instagram size={20} className="text-rose-600" strokeWidth={1.5} />
+                <div className="flex items-center gap-5 p-6 bg-canvas rounded-atelier-panel border border-canvas-line transition-all duration-300 hover:border-rose/40">
+                  <div className="w-12 h-12 rounded-full bg-rose/10 flex items-center justify-center flex-shrink-0 text-rose">
+                    <Instagram size={22} strokeWidth={1.5} />
                   </div>
-                  <div>
-                    <h3 className="font-serif text-lg text-brown-800">Instagram</h3>
-                    <p className="text-sm text-brown-400 mt-1">Follow our latest blooms and share your gifts with us.</p>
+                  <div className="flex-1">
+                    <h3 className="font-serif text-lg text-bark">Instagram</h3>
+                    <p className="text-sm text-ink-light mt-1">Follow our latest blooms and share your gifts with us.</p>
                     <a
                       href={brandInfo.instagramUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm text-terracotta-500 hover:text-terracotta-600 mt-2 inline-block link-underline"
+                      className="text-sm text-rose hover:text-rose-deep mt-2 inline-block font-medium link-underline"
                     >
                       {brandInfo.instagram} →
                     </a>
@@ -80,28 +104,28 @@ export default function Contact() {
                 </div>
 
                 {/* Email */}
-                <div className="flex items-start gap-4 p-5 bg-cream-100 rounded-sm">
-                  <div className="w-11 h-11 rounded-full bg-sage-200 flex items-center justify-center flex-shrink-0">
-                    <Mail size={20} className="text-sage-700" strokeWidth={1.5} />
+                <div className="flex items-center gap-5 p-6 bg-canvas rounded-atelier-panel border border-canvas-line transition-all duration-300 hover:border-rose/40">
+                  <div className="w-12 h-12 rounded-full bg-canvas-line/30 flex items-center justify-center flex-shrink-0 text-ink-light">
+                    <Mail size={22} strokeWidth={1.5} />
                   </div>
-                  <div>
-                    <h3 className="font-serif text-lg text-brown-800">Email</h3>
-                    <p className="text-sm text-brown-400 mt-1">
+                  <div className="flex-1">
+                    <h3 className="font-serif text-lg text-bark">Email</h3>
+                    <p className="text-sm text-ink-light mt-1">
                       Email address coming soon. For now, please reach us on WhatsApp or Instagram.
                     </p>
-                    <span className="text-sm text-brown-300 mt-2 inline-block">Coming soon</span>
+                    <span className="text-xs text-ink-light/50 mt-2 inline-block italic">Coming soon</span>
                   </div>
                 </div>
 
                 {/* Business hours */}
-                <div className="flex items-start gap-4 p-5 bg-cream-100 rounded-sm">
-                  <div className="w-11 h-11 rounded-full bg-gold-200 flex items-center justify-center flex-shrink-0">
-                    <Clock size={20} className="text-gold-600" strokeWidth={1.5} />
+                <div className="flex items-center gap-5 p-6 bg-canvas rounded-atelier-panel border border-canvas-line transition-all duration-300 hover:border-rose/40">
+                  <div className="w-12 h-12 rounded-full bg-bark/10 flex items-center justify-center flex-shrink-0 text-bark">
+                    <Clock size={22} strokeWidth={1.5} />
                   </div>
-                  <div>
-                    <h3 className="font-serif text-lg text-brown-800">Business hours</h3>
-                    <p className="text-sm text-brown-400 mt-1">{brandInfo.businessHours}</p>
-                    <p className="text-xs text-brown-300 mt-1">{brandInfo.responseTime}</p>
+                  <div className="flex-1">
+                    <h3 className="font-serif text-lg text-bark">Business hours</h3>
+                    <p className="text-sm text-ink-light mt-1">{brandInfo.businessHours}</p>
+                    <p className="text-xs text-ink-light/60 mt-1 italic">{brandInfo.responseTime}</p>
                   </div>
                 </div>
               </div>
@@ -109,35 +133,37 @@ export default function Contact() {
 
             {/* Enquiry form */}
             <Reveal delay={150}>
-              <div className="bg-cream-100 p-6 lg:p-8 rounded-sm border border-cream-300">
-                <h2 className="heading-serif text-2xl mb-2">Send an enquiry</h2>
-                <p className="text-sm text-brown-400 mb-6">
+              <div className="bg-canvas p-8 lg:p-10 rounded-atelier-panel border border-canvas-line shadow-soft">
+                <h2 className="font-serif text-3xl text-bark mb-2">Send an enquiry</h2>
+                <p className="text-sm text-ink-light mb-8">
                   Fill in the form and we will open a WhatsApp chat with your details pre-filled.
                 </p>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-brown-700 mb-1.5">Your name</label>
-                    <input
-                      type="text"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="Your name"
-                      className="input-field"
-                      required
-                    />
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-xs font-medium text-bark mb-2 uppercase tracking-wider">Your name</label>
+                      <input
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="Your name"
+                        className="input-field"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-bark mb-2 uppercase tracking-wider">Email (optional)</label>
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="your@email.com"
+                        className="input-field"
+                      />
+                    </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-brown-700 mb-1.5">Email (optional)</label>
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="your@email.com"
-                      className="input-field"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-brown-700 mb-1.5">Product of interest (optional)</label>
+                    <label className="block text-xs font-medium text-bark mb-2 uppercase tracking-wider">Product of interest (optional)</label>
                     <input
                       type="text"
                       value={product}
@@ -147,7 +173,7 @@ export default function Contact() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-brown-700 mb-1.5">Message</label>
+                    <label className="block text-xs font-medium text-bark mb-2 uppercase tracking-wider">Message</label>
                     <textarea
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
@@ -157,13 +183,13 @@ export default function Contact() {
                       required
                     />
                   </div>
-                  <button type="submit" className="btn-primary w-full">
-                    <Send size={16} />
+                  <AtelierButton type="submit" className="w-full py-4">
+                    <Send size={18} className="mr-2" />
                     Send enquiry
-                  </button>
+                  </AtelierButton>
                 </form>
-                <div className="mt-4 pt-4 border-t border-cream-300">
-                  <p className="text-xs text-brown-400 text-center mb-3">Or reach us directly</p>
+                <div className="mt-8 pt-8 border-t border-canvas-line text-center">
+                  <p className="text-xs text-ink-light mb-4 italic">Or reach us directly</p>
                   <WhatsAppButton message={generalEnquiryMessage()} label="Order on WhatsApp" className="w-full" />
                 </div>
               </div>

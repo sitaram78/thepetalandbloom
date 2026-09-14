@@ -1,7 +1,7 @@
 import { Droplets, Sun, Wind, Sparkles, Hand, AlertCircle } from 'lucide-react';
-import PageHeader from '@/components/PageHeader';
 import Reveal from '@/components/Reveal';
 import { heroImages } from '@/data/site';
+import SEO from '@/components/SEO';
 
 const careTips = [
   { icon: Droplets, title: 'Keep away from water', desc: 'Crochet flowers are not waterproof. Keep them away from water, rain, and high humidity areas.' },
@@ -14,39 +14,62 @@ const careTips = [
 
 export default function CareGuide() {
   return (
-    <div className="bg-parchment-50">
-      <PageHeader
-        label="Care Guide"
-        title={<>Keep your bloom beautiful</>}
-        subtitle="A little care goes a long way. Follow these simple steps and your handmade bloom will stay beautiful for years."
-        image={heroImages.secondary}
+    <div className="bg-linen min-h-screen">
+      <SEO
+        title="Care Guide — The Petal & Bloom"
+        description="Learn how to maintain and preserve your handmade crochet blooms so they stay beautiful for years."
+        canonicalPath="/care-guide"
       />
 
-      <section className="py-16 lg:py-24 bg-parchment-50">
+      {/* Atelier Care Header */}
+      <section className="pt-16 pb-12 lg:pt-24 lg:pb-20">
+        <div className="container-lux grid grid-cols-1 lg:grid-cols-12 gap-12 items-end">
+          <div className="lg:col-span-7">
+            <span className="font-serif italic text-sm text-rose mb-3 block uppercase tracking-widest">Care Guide</span>
+            <h1 className="font-serif text-4xl sm:text-5xl lg:text-7xl text-bark leading-tight mb-6">
+              Keep your bloom <br />beautiful.
+            </h1>
+            <p className="text-ink-light text-base sm:text-lg max-w-2xl leading-relaxed">
+              A little care goes a long way. Follow these simple steps and your handmade bloom will stay beautiful for years.
+            </p>
+          </div>
+          <div className="lg:col-span-5">
+            <div className="aspect-[16/9] rounded-atelier-img overflow-hidden shadow-soft">
+              <img
+                src={heroImages.secondary}
+                alt="Care guide illustration"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 lg:py-24 bg-linen">
         <div className="container-lux">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {careTips.map((tip, i) => (
               <Reveal key={i} delay={i * 80}>
-                <div className="glass-panel p-8 rounded-sm border border-silk shadow-soft h-full transition-all duration-500 hover:-translate-y-1">
-                  <div className="w-12 h-12 rounded-full bg-silk flex items-center justify-center mb-6 text-rose shadow-sm">
+                <div className="bg-canvas p-8 rounded-atelier-panel border border-canvas-line shadow-soft h-full transition-all duration-500 hover:-translate-y-1">
+                  <div className="w-12 h-12 rounded-full bg-linen flex items-center justify-center mb-6 text-rose shadow-sm">
                     <tip.icon size={22} strokeWidth={1.5} />
                   </div>
-                  <h3 className="font-serif text-xl text-ink mb-3">{tip.title}</h3>
+                  <h3 className="font-serif text-xl text-bark mb-3">{tip.title}</h3>
                   <p className="text-sm text-ink-light leading-relaxed">{tip.desc}</p>
                 </div>
               </Reveal>
             ))}
           </div>
 
-          <Reveal className="mt-16 bg-forest p-12 lg:p-16 rounded-sm text-center shadow-xl relative overflow-hidden">
+          <Reveal className="mt-16 bg-bark-dark p-12 lg:p-16 rounded-atelier-panel text-center shadow-xl relative overflow-hidden">
             <div className="absolute inset-0 opacity-10">
               <img src={heroImages.texture} alt="" className="w-full h-full object-cover" />
             </div>
             <div className="relative z-10">
-              <h3 className="font-serif text-3xl lg:text-4xl text-parchment-50 mb-6">
+              <h3 className="font-serif text-3xl lg:text-4xl text-linen mb-6">
                 Made to last. Made to stay.
               </h3>
-              <p className="text-parchment-100/70 max-w-xl mx-auto text-lg font-light leading-relaxed">
+              <p className="text-linen/70 max-w-xl mx-auto text-lg font-light leading-relaxed">
                 With a little care, your handmade crochet bloom will keep its shape, colour, and softness for years —
                 long after fresh flowers would have faded.
               </p>

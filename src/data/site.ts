@@ -206,7 +206,7 @@ export const instagramPosts = [
 ];
 
 export const heroImages = {
-  primary: 'https://images.pexels.com/photos/20269075/pexels-photo-20269075.jpeg?auto=compress&cs=tinysrgb&h=1200&w=900',
+  primary: 'https://images.unsplash.com/photo-1747856056384-ba35f5ed353d?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0',
   secondary: 'https://images.pexels.com/photos/29753251/pexels-photo-29753251.jpeg?auto=compress&cs=tinysrgb&h=800&w=600',
   texture: 'https://images.pexels.com/photos/3693232/pexels-photo-3693232.jpeg?auto=compress&cs=tinysrgb&h=800&w=600',
   hands: 'https://images.pexels.com/photos/7750721/pexels-photo-7750721.jpeg?auto=compress&cs=tinysrgb&h=800&w=600',

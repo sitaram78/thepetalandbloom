@@ -16,7 +16,7 @@ export default function RecentlyViewed({ excludeCode }: { excludeCode?: string }
   if (recentProducts.length === 0) return null;
 
   return (
-    <section className="py-12 lg:py-16 bg-cream-50">
+    <section className="pt-12 lg:pt-16 pb-6 lg:pb-8 bg-cream-50">
       <div className="container-lux">
         <Reveal>
           <h2 className="heading-serif text-2xl lg:text-3xl mb-8">You might still be thinking about these...</h2>

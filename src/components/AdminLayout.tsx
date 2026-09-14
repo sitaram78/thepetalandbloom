@@ -65,7 +65,7 @@ export default function AdminLayout({ children, activePage }: AdminLayoutProps) 
 
       {/* Sidebar */}
       <aside
-        className={`bg-ink text-parchment-50 fixed md:sticky top-0 h-screen z-50 transition-all duration-500 ease-in-out
+        className={`bg-ink text-white fixed md:sticky top-0 h-screen z-50 transition-all duration-500 ease-in-out
           ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
           ${isCollapsed ? 'md:w-20' : 'md:w-64'} w-64 flex flex-col`}
       >
@@ -75,7 +75,7 @@ export default function AdminLayout({ children, activePage }: AdminLayoutProps) 
           {!isCollapsed ? (
             <>
               <p className="text-xs uppercase tracking-[0.3em] text-rose mb-1">Studio Admin</p>
-              <h2 className="heading-serif text-xl truncate">Atelier Control</h2>
+              <h2 className="heading-serif text-xl truncate text-white">Atelier Control</h2>
             </>
           ) : (
             <div className="flex justify-center">
@@ -90,8 +90,8 @@ export default function AdminLayout({ children, activePage }: AdminLayoutProps) 
             onClick={() => setIsMobileMenuOpen(false)}
             className={`flex items-center gap-3 px-4 py-3 rounded-sm transition-all duration-300 ${
               activePage === 'dashboard'
-                ? 'bg-white/10 text-white font-medium shadow-inner'
-                : 'hover:bg-white/5 text-parchment-50/60 hover:text-white'
+                ? 'bg-white/20 text-white font-medium shadow-inner'
+                : 'hover:bg-white/10 text-white/60 hover:text-white'
             } ${isCollapsed ? 'justify-center px-2' : ''}`}
             title="Dashboard"
           >
@@ -103,8 +103,8 @@ export default function AdminLayout({ children, activePage }: AdminLayoutProps) 
             onClick={() => setIsMobileMenuOpen(false)}
             className={`flex items-center gap-3 px-4 py-3 rounded-sm transition-all duration-300 ${
               activePage === 'editor'
-                ? 'bg-white/10 text-white font-medium shadow-inner'
-                : 'hover:bg-white/5 text-parchment-50/60 hover:text-white'
+                ? 'bg-white/20 text-white font-medium shadow-inner'
+                : 'hover:bg-white/10 text-white/60 hover:text-white'
             } ${isCollapsed ? 'justify-center px-2' : ''}`}
             title="Add New Piece"
           >
@@ -116,8 +116,8 @@ export default function AdminLayout({ children, activePage }: AdminLayoutProps) 
             onClick={() => setIsMobileMenuOpen(false)}
             className={`flex items-center gap-3 px-4 py-3 rounded-sm transition-all duration-300 ${
               activePage === 'migrate'
-                ? 'bg-white/10 text-white font-medium shadow-inner'
-                : 'hover:bg-white/5 text-parchment-50/60 hover:text-white'
+                ? 'bg-white/20 text-white font-medium shadow-inner'
+                : 'hover:bg-white/10 text-white/60 hover:text-white'
             } ${isCollapsed ? 'justify-center px-2' : ''}`}
             title="Migration Tool"
           >
@@ -129,8 +129,8 @@ export default function AdminLayout({ children, activePage }: AdminLayoutProps) 
             onClick={() => setIsMobileMenuOpen(false)}
             className={`flex items-center gap-3 px-4 py-3 rounded-sm transition-all duration-300 ${
               activePage === 'settings'
-                ? 'bg-white/10 text-white font-medium shadow-inner'
-                : 'hover:bg-white/5 text-parchment-50/60 hover:text-white'
+                ? 'bg-white/20 text-white font-medium shadow-inner'
+                : 'hover:bg-white/10 text-white/60 hover:text-white'
             } ${isCollapsed ? 'justify-center px-2' : ''}`}
             title="Studio Settings"
           >
@@ -143,7 +143,7 @@ export default function AdminLayout({ children, activePage }: AdminLayoutProps) 
           <button
             onClick={handleLogout}
             disabled={isLoggingOut}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-sm hover:bg-rose/20 text-parchment-50/60 hover:text-rose transition-all disabled:opacity-50 ${
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-sm hover:bg-rose/20 text-white/60 hover:text-rose transition-all disabled:opacity-50 ${
               isCollapsed ? 'justify-center px-2' : ''
             }`}
             title="Sign Out"
@@ -154,7 +154,7 @@ export default function AdminLayout({ children, activePage }: AdminLayoutProps) 
 
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="hidden md:flex w-full items-center justify-center p-2 rounded-sm hover:bg-white/5 text-parchment-50/40 hover:text-white transition-all"
+            className="hidden md:flex w-full items-center justify-center p-2 rounded-sm hover:bg-white/5 text-white/40 hover:text-white transition-all"
             title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
           >
             {isCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}

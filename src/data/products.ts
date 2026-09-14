@@ -11,6 +11,7 @@ export interface Product {
   colors?: string[];
   preparationDays?: string;
   occasions?: string[];
+  recipients?: string[];
   bestseller?: boolean;
   featured?: boolean;
   isNew?: boolean;
@@ -33,6 +34,7 @@ export const products: Product[] = [
     colors: ['Red', 'Pink', 'White', 'Lavender', 'Yellow', 'Custom'],
     preparationDays: '3–5 days',
     occasions: ['Birthday', 'Anniversary', 'Friendship', 'Gifting'],
+    recipients: ['Partner', 'Friend', 'Mother'],
     bestseller: true,
     featured: true,
     customisable: true,
@@ -53,6 +55,7 @@ export const products: Product[] = [
     colors: ['Golden Yellow', 'Mustard', 'Cream', 'Custom'],
     preparationDays: '3–5 days',
     occasions: ['Birthday', 'Friendship', 'Just Because'],
+    recipients: ['Friend', 'Sibling'],
     customisable: true,
     images: [
       'https://images.pexels.com/photos/36007970/pexels-photo-36007970.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
@@ -103,6 +106,7 @@ export const products: Product[] = [
     colors: ['Red', 'Pink', 'White', 'Lavender', 'Peach', 'Custom'],
     preparationDays: '4–6 days',
     occasions: ['Anniversary', 'Valentine\'s Day', 'Mother\'s Day'],
+    recipients: ['Partner', 'Mother'],
     featured: true,
     customisable: true,
     images: [

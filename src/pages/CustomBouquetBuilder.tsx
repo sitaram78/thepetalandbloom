@@ -1,12 +1,13 @@
 import { useState, useMemo } from 'react';
 import { ArrowLeft, ArrowRight, Check, MessageCircle, Clock, PenTool, Flower2, Palette, Package, FileText } from 'lucide-react';
-import PageHeader from '@/components/PageHeader';
 import Reveal from '@/components/Reveal';
 import WhatsAppButton from '@/components/WhatsAppButton';
+import AtelierButton from '@/components/AtelierButton';
 import { heroImages } from '@/data/site';
 import { formatPrice } from '@/data/products';
 import { customBouquetBuilderMessage } from '@/utils/whatsapp';
 import { trackEvent } from '@/utils/analytics';
+import SEO from '@/components/SEO';
 
 const bouquetSizes = [
   { label: '1 flower', flowers: 1, price: 499 },
@@ -27,6 +28,17 @@ const messageOptions = [
   { label: 'No message', price: 0 },
   { label: 'Personalised card', price: 49 },
 ];
+
+const COLOR_MAP: Record<string, { active: string; inactive: string; textActive: string; textInactive: string }> = {
+  'Red': { active: 'bg-rose-deep', inactive: 'bg-rose/20', textActive: 'text-linen', textInactive: 'text-rose-deep' },
+  'Pink': { active: 'bg-rose', inactive: 'bg-rose/20', textActive: 'text-linen', textInactive: 'text-rose' },
+  'White': { active: 'bg-canvas', inactive: 'bg-linen', textActive: 'text-bark', textInactive: 'text-bark/60' },
+  'Lavender': { active: 'bg-purple-400', inactive: 'bg-purple-100', textActive: 'text-white', textInactive: 'text-purple-600' },
+  'Yellow': { active: 'bg-yellow-500', inactive: 'bg-yellow-100', textActive: 'text-white', textInactive: 'text-yellow-700' },
+  'Cream': { active: 'bg-canvas', inactive: 'bg-linen', textActive: 'text-bark', textInactive: 'text-bark/60' },
+  'Sage': { active: 'bg-moss', inactive: 'bg-moss/20', textActive: 'text-linen', textInactive: 'text-moss' },
+  'Custom mix': { active: 'bg-bark', inactive: 'bg-canvas', textActive: 'text-linen', textInactive: 'text-bark' },
+};
 
 export default function CustomBouquetBuilder() {
   const [step, setStep] = useState(0);
@@ -99,13 +111,36 @@ export default function CustomBouquetBuilder() {
   };
 
   return (
-    <div className="bg-parchment-50 min-h-screen">
-      <PageHeader
-        label="Studio Table"
-        title={<>Co-create your bloom.</>}
-        subtitle="A bespoke experience for those who see flowers as poetry. Assemble your arrangement step by step."
-        image={heroImages.primary}
+    <div className="bg-linen min-h-screen">
+      <SEO
+        title="Custom Bouquet Builder — The Petal & Bloom"
+        description="Co-create your own unique crochet bouquet. Choose the size, flowers, colours, and details for a truly personal gift."
+        canonicalPath="/custom-bouquet"
       />
+
+      {/* Atelier Builder Header */}
+      <section className="pt-16 pb-12 lg:pt-24 lg:pb-20">
+        <div className="container-lux grid grid-cols-1 lg:grid-cols-12 gap-12 items-end">
+          <div className="lg:col-span-7">
+            <span className="font-serif italic text-sm text-rose mb-3 block uppercase tracking-widest">Studio Table</span>
+            <h1 className="font-serif text-4xl sm:text-5xl lg:text-7xl text-bark leading-tight mb-6">
+              Co-create your <br />own bloom.
+            </h1>
+            <p className="text-ink-light text-base sm:text-lg max-w-2xl leading-relaxed">
+              A bespoke experience for those who see flowers as poetry. Assemble your arrangement step by step, with our studio assistant guiding you.
+            </p>
+          </div>
+          <div className="lg:col-span-5">
+            <div className="aspect-[16/9] rounded-atelier-img overflow-hidden shadow-soft">
+              <img
+                src={heroImages.primary}
+                alt="Custom bouquet building"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
 
       <section className="py-12 lg:py-24">
         <div className="container-lux grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24">
@@ -113,71 +148,71 @@ export default function CustomBouquetBuilder() {
           {/* Left: The Studio Manifest (Composition) */}
           <div className="lg:col-span-4">
             <div className="sticky top-32 space-y-8">
-              <div className="glass-panel border border-silk p-8 rounded-sm shadow-soft animate-fade-up relative overflow-hidden">
+              <div className="glass-panel border border-canvas-line p-8 rounded-atelier-panel shadow-soft animate-fade-up relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-4 opacity-10">
-                  <PenTool size={80} className="text-ink" />
+                  <PenTool size={80} className="text-bark" />
                 </div>
 
-                <h3 className="font-serif text-2xl text-ink mb-8 flex items-center gap-3">
+                <h3 className="font-serif text-2xl text-bark mb-8 flex items-center gap-3">
                   The Composition
                 </h3>
 
                 <div className="space-y-6">
                   <div className="flex items-center gap-4 text-sm">
-                    <div className="w-10 h-10 rounded-full bg-silk/50 flex items-center justify-center text-rose border border-silk shadow-sm">
+                    <div className="w-10 h-10 rounded-full bg-canvas flex items-center justify-center text-rose border border-canvas-line shadow-sm">
                       <Clock size={16} strokeWidth={1.5} />
                     </div>
                     <div className="flex-1">
                       <span className="block text-[10px] uppercase tracking-wider text-ink-light/60 font-semibold">Size</span>
-                      <span className="text-ink font-medium">{size || 'Not selected'}</span>
+                      <span className="text-bark font-medium">{size || 'Not selected'}</span>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-4 text-sm">
-                    <div className="w-10 h-10 rounded-full bg-silk/50 flex items-center justify-center text-rose border border-silk shadow-sm">
+                    <div className="w-10 h-10 rounded-full bg-canvas flex items-center justify-center text-rose border border-canvas-line shadow-sm">
                       <Flower2 size={16} strokeWidth={1.5} />
                     </div>
                     <div className="flex-1">
                       <span className="block text-[10px] uppercase tracking-wider text-ink-light/60 font-semibold">Flora</span>
-                      <span className="text-ink font-medium">{flowers.length > 0 ? flowers.join(', ') : 'Not selected'}</span>
+                      <span className="text-bark font-medium">{flowers.length > 0 ? flowers.join(', ') : 'Not selected'}</span>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-4 text-sm">
-                    <div className="w-10 h-10 rounded-full bg-silk/50 flex items-center justify-center text-rose border border-silk shadow-sm">
+                    <div className="w-10 h-10 rounded-full bg-canvas flex items-center justify-center text-rose border border-canvas-line shadow-sm">
                       <Palette size={16} strokeWidth={1.5} />
                     </div>
                     <div className="flex-1">
                       <span className="block text-[10px] uppercase tracking-wider text-ink-light/60 font-semibold">Palette</span>
-                      <span className="text-ink font-medium">{colors.length > 0 ? colors.join(', ') : 'Not selected'}</span>
+                      <span className="text-bark font-medium">{colors.length > 0 ? colors.join(', ') : 'Not selected'}</span>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-4 text-sm">
-                    <div className="w-10 h-10 rounded-full bg-silk/50 flex items-center justify-center text-rose border border-silk shadow-sm">
+                    <div className="w-10 h-10 rounded-full bg-canvas flex items-center justify-center text-rose border border-canvas-line shadow-sm">
                       <Package size={16} strokeWidth={1.5} />
                     </div>
                     <div className="flex-1">
                       <span className="block text-[10px] uppercase tracking-wider text-ink-light/60 font-semibold">Wrap</span>
-                      <span className="text-ink font-medium">{wrapping || 'Not selected'}</span>
+                      <span className="text-bark font-medium">{wrapping || 'Not selected'}</span>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-4 text-sm">
-                    <div className="w-10 h-10 rounded-full bg-silk/50 flex items-center justify-center text-rose border border-silk shadow-sm">
+                    <div className="w-10 h-10 rounded-full bg-canvas flex items-center justify-center text-rose border border-canvas-line shadow-sm">
                       <FileText size={16} strokeWidth={1.5} />
                     </div>
                     <div className="flex-1">
                       <span className="block text-[10px] uppercase tracking-wider text-ink-light/60 font-semibold">Note</span>
-                      <span className="text-ink font-medium">{message || 'Not selected'}</span>
+                      <span className="text-bark font-medium">{message || 'Not selected'}</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-10 pt-8 border-t border-silk flex justify-between items-end">
+                <div className="mt-10 pt-8 border-t border-canvas-line flex justify-between items-end">
                   <div className="space-y-1">
                     <span className="block text-[10px] uppercase tracking-wider text-ink-light/60 font-semibold">Estimated Value</span>
-                    <span className="font-serif text-4xl text-ink">{formatPrice(estimatedPrice)}</span>
+                    <span className="font-serif text-4xl text-bark">{formatPrice(estimatedPrice)}</span>
                   </div>
                   {preparationTime && (
                     <div className="text-right">
@@ -188,7 +223,7 @@ export default function CustomBouquetBuilder() {
                 </div>
               </div>
 
-              <p className="text-xs text-ink-light/60 text-center italic px-4">
+              <p className="text-xs text-ink-light/60 text-center italic px-4 mt-8">
                 "A bouquet is a silent conversation between the giver and the bloom."
               </p>
             </div>
@@ -204,16 +239,16 @@ export default function CustomBouquetBuilder() {
                     <div
                       className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-medium transition-all duration-500 shadow-sm ${
                         i < step
-                          ? 'bg-sage text-parchment-50'
+                          ? 'bg-rose text-linen'
                           : i === step
-                          ? 'bg-ink text-parchment-50 ring-4 ring-ink/10'
-                          : 'bg-silk text-ink-light'
+                          ? 'bg-bark text-linen ring-4 ring-bark/10'
+                          : 'bg-canvas text-ink-light'
                       }`}
                     >
                       {i < step ? <Check size={16} strokeWidth={2.5} /> : i + 1}
                     </div>
                     <span className={`text-[10px] uppercase tracking-widest transition-colors ${
-                      i === step ? 'text-ink font-bold' : 'text-ink-light/40'
+                      i === step ? 'text-bark font-bold' : 'text-ink-light/40'
                     }`}>
                       {s}
                     </span>
@@ -225,20 +260,20 @@ export default function CustomBouquetBuilder() {
                 {/* Step 1: Size */}
                 {step === 0 && (
                   <Reveal>
-                    <h2 className="heading-serif text-4xl text-center mb-12">Determine the scale</h2>
+                    <h2 className="font-serif text-4xl text-center text-bark mb-12">Determine the scale</h2>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
                       {bouquetSizes.map((s) => (
                         <button
                           key={s.label}
                           onClick={() => setSize(s.label)}
-                          className={`p-8 rounded-sm border text-center transition-all duration-500 shadow-sm ${
+                          className={`p-8 rounded-atelier-btn border text-center transition-all duration-500 shadow-sm ${
                             size === s.label
-                              ? 'bg-rose text-parchment-50 border-rose shadow-md scale-[1.02]'
-                              : 'bg-parchment-100 text-ink border-silk hover:border-rose hover:bg-parchment-50'
+                              ? 'bg-bark text-linen border-bark shadow-md scale-[1.02]'
+                              : 'bg-canvas text-bark border-canvas-line hover:border-rose hover:bg-linen'
                           }`}
                         >
                           <span className="block font-serif text-xl">{s.label}</span>
-                          <span className={`text-sm mt-2 block ${size === s.label ? 'text-silk' : 'text-rose font-medium'}`}>
+                          <span className={`text-sm mt-2 block ${size === s.label ? 'text-linen/70' : 'text-rose font-medium'}`}>
                             {formatPrice(s.price)}
                           </span>
                         </button>
@@ -250,17 +285,17 @@ export default function CustomBouquetBuilder() {
                 {/* Step 2: Flowers */}
                 {step === 1 && (
                   <Reveal>
-                    <h2 className="heading-serif text-4xl text-center mb-4">Select your flora</h2>
+                    <h2 className="font-serif text-4xl text-center text-bark mb-4">Select your flora</h2>
                     <p className="text-sm text-ink-light text-center mb-12 italic font-light">Combine species to create your own narrative</p>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
                       {flowerTypes.map((f) => (
                         <button
                           key={f}
                           onClick={() => toggleArrayItem(flowers, f, setFlowers)}
-                          className={`p-8 rounded-sm border text-center transition-all duration-500 shadow-sm ${
+                          className={`p-8 rounded-atelier-btn border text-center transition-all duration-500 shadow-sm ${
                             flowers.includes(f)
-                              ? 'bg-rose text-parchment-50 border-rose shadow-md scale-[1.02]'
-                              : 'bg-parchment-100 text-ink border-silk hover:border-rose hover:bg-parchment-50'
+                              ? 'bg-bark text-linen border-bark shadow-md scale-[1.02]'
+                              : 'bg-canvas text-bark border-canvas-line hover:border-rose hover:bg-linen'
                           }`}
                         >
                           <span className="font-serif text-xl">{f}</span>
@@ -274,23 +309,27 @@ export default function CustomBouquetBuilder() {
                 {/* Step 3: Colours */}
                 {step === 2 && (
                   <Reveal>
-                    <h2 className="heading-serif text-4xl text-center mb-4">Define the palette</h2>
+                    <h2 className="font-serif text-4xl text-center text-bark mb-4">Define the palette</h2>
                     <p className="text-sm text-ink-light text-center mb-12 italic font-light">Choose the tones that speak your emotion</p>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
-                      {colorOptions.map((c) => (
-                        <button
-                          key={c}
-                          onClick={() => toggleArrayItem(colors, c, setColors)}
-                          className={`p-6 rounded-sm border text-center transition-all duration-500 shadow-sm ${
-                            colors.includes(c)
-                              ? 'bg-rose text-parchment-50 border-rose shadow-md scale-[1.02]'
-                              : 'bg-parchment-100 text-ink border-silk hover:border-rose hover:bg-parchment-50'
-                          }`}
-                        >
-                          <span className="text-sm font-medium uppercase tracking-wider">{c}</span>
-                          {colors.includes(c) && <Check size={16} className="inline ml-1.5" />}
-                        </button>
-                      ))}
+                      {colorOptions.map((c) => {
+                        const style = COLOR_MAP[c] || COLOR_MAP['Custom mix'];
+                        const isActive = colors.includes(c);
+                        return (
+                          <button
+                            key={c}
+                            onClick={() => toggleArrayItem(colors, c, setColors)}
+                            className={`p-6 rounded-atelier-btn border text-center transition-all duration-500 shadow-sm ${
+                              isActive
+                                ? `${style.active} ${style.textActive} border-transparent shadow-md scale-[1.02]`
+                                : `${style.inactive} ${style.textInactive} border-canvas-line hover:border-rose`
+                            }`}
+                          >
+                            <span className="text-sm font-medium uppercase tracking-wider">{c}</span>
+                            {isActive && <Check size={16} className="inline ml-1.5" />}
+                          </button>
+                        );
+                      })}
                     </div>
                   </Reveal>
                 )}
@@ -298,20 +337,20 @@ export default function CustomBouquetBuilder() {
                 {/* Step 4: Wrapping */}
                 {step === 3 && (
                   <Reveal>
-                    <h2 className="heading-serif text-4xl text-center mb-12">Choose the finish</h2>
+                    <h2 className="font-serif text-4xl text-center text-bark mb-12">Choose the finish</h2>
                     <div className="grid grid-cols-2 gap-8 max-w-md mx-auto">
                       {wrappingOptions.map((w) => (
                         <button
                           key={w.label}
                           onClick={() => setWrapping(w.label)}
-                          className={`p-10 rounded-sm border text-center transition-all duration-500 shadow-sm ${
+                          className={`p-10 rounded-atelier-btn border text-center transition-all duration-500 shadow-sm ${
                             wrapping === w.label
-                              ? 'bg-rose text-parchment-50 border-rose shadow-md scale-[1.02]'
-                              : 'bg-parchment-100 text-ink border-silk hover:border-rose hover:bg-parchment-50'
+                              ? 'bg-bark text-linen border-bark shadow-md scale-[1.02]'
+                              : 'bg-canvas text-bark border-canvas-line hover:border-rose hover:bg-linen'
                           }`}
                         >
                           <span className="block font-serif text-2xl">{w.label}</span>
-                          <span className={`text-sm mt-2 block ${wrapping === w.label ? 'text-silk' : 'text-rose font-medium'}`}>
+                          <span className={`text-sm mt-2 block ${wrapping === w.label ? 'text-linen/70' : 'text-rose font-medium'}`}>
                             {w.price === 0 ? 'Included' : formatPrice(w.price)}
                           </span>
                         </button>
@@ -323,20 +362,20 @@ export default function CustomBouquetBuilder() {
                 {/* Step 5: Message */}
                 {step === 4 && (
                   <Reveal>
-                    <h2 className="heading-serif text-4xl text-center mb-12">Add a handwritten note</h2>
+                    <h2 className="font-serif text-4xl text-center text-bark mb-12">Add a handwritten note</h2>
                     <div className="grid grid-cols-2 gap-8 max-w-md mx-auto mb-10">
                       {messageOptions.map((m) => (
                         <button
                           key={m.label}
                           onClick={() => setMessage(m.label)}
-                          className={`p-8 rounded-sm border text-center transition-all duration-500 shadow-sm ${
+                          className={`p-8 rounded-atelier-btn border text-center transition-all duration-500 shadow-sm ${
                             message === m.label
-                              ? 'bg-rose text-parchment-50 border-rose shadow-md scale-[1.02]'
-                              : 'bg-parchment-100 text-ink border-silk hover:border-rose hover:bg-parchment-50'
+                              ? 'bg-bark text-linen border-bark shadow-md scale-[1.02]'
+                              : 'bg-canvas text-bark border-canvas-line hover:border-rose hover:bg-linen'
                           }`}
                         >
                           <span className="block font-serif text-lg">{m.label}</span>
-                          <span className={`text-xs mt-1 block ${message === m.label ? 'text-silk' : 'text-rose font-medium'}`}>
+                          <span className={`text-xs mt-1 block ${message === m.label ? 'text-linen/70' : 'text-rose font-medium'}`}>
                             {m.price === 0 ? 'Complimentary' : formatPrice(m.price)}
                           </span>
                         </button>
@@ -349,7 +388,7 @@ export default function CustomBouquetBuilder() {
                           onChange={(e) => setCustomMessage(e.target.value)}
                           placeholder="Write your heart out..."
                           rows={5}
-                          className="input-field resize-none text-ink bg-parchment-50 border-silk focus:border-rose shadow-sm"
+                          className="input-field resize-none text-bark bg-linen border-canvas-line focus:border-rose shadow-sm"
                         />
                       </div>
                     )}
@@ -359,33 +398,33 @@ export default function CustomBouquetBuilder() {
                 {/* Step 6: Review */}
                 {step === 5 && (
                   <Reveal>
-                    <h2 className="heading-serif text-4xl text-center mb-12">The Final Review</h2>
-                    <div className="glass-panel p-10 rounded-sm border border-silk space-y-6 max-w-md mx-auto shadow-soft">
+                    <h2 className="font-serif text-4xl text-center text-bark mb-12">The Final Review</h2>
+                    <div className="glass-panel p-10 rounded-atelier-panel border border-canvas-line space-y-6 max-w-md mx-auto shadow-soft">
                       <div className="flex justify-between text-sm">
                         <span className="text-ink-light font-medium">Bouquet size</span>
-                        <span className="text-ink font-semibold">{size}</span>
+                        <span className="text-bark font-semibold">{size}</span>
                       </div>
                       <div className="flex justify-between text-sm">
                         <span className="text-ink-light font-medium">Flora</span>
-                        <span className="text-ink font-semibold">{flowers.join(', ')}</span>
+                        <span className="text-bark font-semibold">{flowers.join(', ')}</span>
                       </div>
                       <div className="flex justify-between text-sm">
                         <span className="text-ink-light font-medium">Palette</span>
-                        <span className="text-ink font-semibold">{colors.join(', ')}</span>
+                        <span className="text-bark font-semibold">{colors.join(', ')}</span>
                       </div>
                       <div className="flex justify-between text-sm">
                         <span className="text-ink-light font-medium">Wrapping</span>
-                        <span className="text-ink font-semibold">{wrapping}</span>
+                        <span className="text-bark font-semibold">{wrapping}</span>
                       </div>
                       <div className="flex justify-between text-sm">
                         <span className="text-ink-light font-medium">Message</span>
-                        <span className="text-ink font-semibold">
+                        <span className="text-bark font-semibold">
                           {message === 'Personalised card' ? (customMessage || 'Personalised card') : message}
                         </span>
                       </div>
-                      <div className="pt-6 border-t border-silk flex justify-between items-center">
+                      <div className="pt-6 border-t border-canvas-line flex justify-between items-center">
                         <span className="text-sm text-ink-light font-medium">Total Estimated Value</span>
-                        <span className="font-serif text-3xl text-ink">{formatPrice(estimatedPrice)}</span>
+                        <span className="font-serif text-3xl text-bark">{formatPrice(estimatedPrice)}</span>
                       </div>
                     </div>
 
@@ -395,9 +434,9 @@ export default function CustomBouquetBuilder() {
                         label="Send to Studio Concierge"
                         className="flex-1 max-w-xs py-5 text-lg"
                       />
-                      <button onClick={() => setStep(0)} className="btn-secondary max-w-xs py-5 text-lg">
+                      <AtelierButton variant="ghost" onClick={() => setStep(0)} className="max-w-xs py-5 text-lg">
                         Refine Selection
-                      </button>
+                      </AtelierButton>
                     </div>
                   </Reveal>
                 )}
@@ -406,26 +445,28 @@ export default function CustomBouquetBuilder() {
               {/* Navigation */}
               {step < 5 && (
                 <div className="flex justify-between mt-16">
-                  <button
+                  <AtelierButton
+                    variant="ghost"
                     onClick={() => {
                       if (step === 0) handleStart();
                       step > 0 && setStep(step - 1);
                     }}
                     disabled={step === 0}
-                    className={`btn-secondary px-10 py-4 ${step === 0 ? 'opacity-0 pointer-events-none' : ''}`}
+                    className={step === 0 ? 'opacity-0 pointer-events-none' : ''}
                   >
-                    <ArrowLeft size={18} /> Back
-                  </button>
-                  <button
+                    <ArrowLeft size={18} className="mr-2" /> Back
+                  </AtelierButton>
+                  <AtelierButton
+                    variant="primary"
                     onClick={() => {
                       if (step === 0) handleStart();
                       if (canProceed) setStep(step + 1);
                     }}
                     disabled={!canProceed}
-                    className={`btn-primary px-10 py-4 ${!canProceed ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    className={!canProceed ? 'opacity-50 cursor-not-allowed' : ''}
                   >
-                    Next Step <ArrowRight size={18} />
-                  </button>
+                    Next Step <ArrowRight size={18} className="ml-2" />
+                  </AtelierButton>
                 </div>
               )}
             </div>

@@ -4,63 +4,28 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        serif: ['Fraunces', 'serif'],
+        sans: ['Karla', 'sans-serif'],
       },
       colors: {
-        parchment: {
-          50: '#F9F7F2',
-          100: '#F4F1EA',
-          200: '#EBE7DE',
-        },
-        ink: {
-          DEFAULT: '#3C473E',
-          light: '#5A665D',
-          dark: '#2A322B',
-        },
-        forest: {
-          DEFAULT: '#2A3D31',
-          dark: '#1A261E',
-          light: '#4B5F53',
-        },
-        charcoal: {
-          DEFAULT: '#1C1E1B',
-          light: '#2D2F2C',
+        linen: '#EFE8D8',
+        canvas: '#E1D6BC',
+        'canvas-line': '#CBBE9C',
+        bark: {
+          DEFAULT: '#2A241C',
+          dark: '#1A1611',
         },
         rose: {
-          DEFAULT: '#BFA3A3',
-          light: '#DBCBCA',
-          dark: '#A48A8A',
+          DEFAULT: '#A8465A',
+          deep: '#833549',
         },
-        sage: {
-          DEFAULT: '#A3B18A',
-          light: '#D1D8C8',
-          dark: '#8A9A84',
+        moss: {
+          DEFAULT: '#58643F',
+          soft: '#7C8B5C',
         },
-        silk: {
-          DEFAULT: '#F2E8DF',
-          light: '#F9F5F2',
-        },
-        champagne: {
-          DEFAULT: '#F7E7CE',
-          light: '#FDF5E6',
-          dark: '#D4C4A1',
-        },
-        brown: {
-          300: '#8a7560',
-          400: '#6f5d4c',
-          500: '#5a4a3c',
-          600: '#4a3d31',
-          700: '#3a3027',
-          800: '#2d251f',
-          900: '#1f1a15',
-        },
-        gold: {
-          200: '#f0e6d0',
-          300: '#e6d5b0',
-          400: '#d4bf90',
-          500: '#c4a96e',
-          600: '#b0965a',
+        ink: {
+          DEFAULT: '#2A241C',
+          light: '#6B6250',
         },
       },
       animation: {
@@ -90,5 +55,19 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    function({ addUtilities }) {
+      addUtilities({
+        '.rounded-atelier-btn': {
+          'border-radius': '2px 14px 2px 14px',
+        },
+        '.rounded-atelier-img': {
+          'border-radius': '2px 40px 2px 40px',
+        },
+        '.rounded-atelier-panel': {
+          'border-radius': '2px 22px 2px 22px',
+        },
+      })
+    },
+  ],
 };

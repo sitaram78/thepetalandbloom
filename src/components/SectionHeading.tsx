@@ -19,9 +19,11 @@ export default function SectionHeading({
   return (
     <Reveal className={`${center ? 'text-center' : ''} ${className}`}>
       {label && (
-        <p className="section-label mb-3">{label}</p>
+        <p className="font-serif italic text-sm text-rose mb-3 tracking-wide uppercase">
+          {label}
+        </p>
       )}
-      <h2 className="heading-serif text-3xl sm:text-4xl lg:text-5xl text-balance">
+      <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-bark leading-tight text-balance">
         {title}
       </h2>
       {subtitle && (
