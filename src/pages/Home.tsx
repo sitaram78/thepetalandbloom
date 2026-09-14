@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Star, Heart, Clock, Palette, Truck, Gift, Sparkles, Users, Flower2 } from 'lucide-react';
 import Reveal from '@/components/Reveal';
@@ -55,8 +55,19 @@ const OCCASION_BLOBS = [
 export default function Home() {
   const { products, getBestsellers, loading: productLoading } = useProducts();
   const { assets, loading: assetsLoading } = useSiteAssets();
+  const [seasonCategory, setSeasonCategory] = useState<string>('All');
   const bestsellers = getBestsellers();
   const featuredProduct = products ? products.find((p) => p.code === 'TPB-BQ-003') : undefined;
+
+  const seasonProducts = (() => {
+    if (!products) return [];
+    let filtered = [...products];
+    if (seasonCategory === 'Bouquets') filtered = filtered.filter(p => p.category === 'bouquets');
+    else if (seasonCategory === 'Single stems') filtered = filtered.filter(p => p.category === 'flowers');
+    else if (seasonCategory === 'Gift boxes') filtered = filtered.filter(p => p.category === 'giftboxes');
+    else if (seasonCategory === 'Customisable only') filtered = filtered.filter(p => p.customisable);
+    return filtered.slice(0, 3);
+  })();
 
   useEffect(() => {
     trackEvent('homepage_view');
@@ -222,22 +233,26 @@ export default function Home() {
           </div>
 
           <div className="flex flex-wrap gap-3 mb-16">
-            {['All', 'Bouquets', 'Single stems', 'Gift boxes'].map((filter, i) => (
+            {['All', 'Bouquets', 'Flowers', 'Gift boxes'].map((filter, i) => (
               <button
                 key={filter}
-                className={`px-5 py-2 rounded-full text-sm border transition-all ${i === 0 ? 'bg-bark text-linen border-bark' : 'border-canvas-line text-ink-light hover:border-rose'}`}
+                onClick={() => setSeasonCategory(filter)}
+                className={`px-5 py-2 rounded-full text-sm border transition-all ${seasonCategory === filter ? 'bg-bark text-linen border-bark' : 'border-canvas-line text-ink-light hover:border-rose'}`}
               >
                 {filter}
               </button>
             ))}
-            <button className="px-5 py-2 rounded-full text-sm border border-sage-400 text-sage-700 hover:bg-sage-400/10 transition-all">
+            <button
+              onClick={() => setSeasonCategory('Customisable only')}
+              className={`px-5 py-2 rounded-full text-sm border transition-all ${seasonCategory === 'Customisable only' ? 'bg-bark text-linen border-bark' : 'border-sage-400 text-sage-700 hover:bg-sage-400/10'}`}
+            >
               Customisable only
             </button>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
-            {products?.slice(0, 3).map((product) => (
-              <Reveal key={product.code}>
+            {seasonProducts.map((product, i) => (
+              <Reveal key={product.code} delay={i * 100}>
                 <ProductCard product={product} />
               </Reveal>
             ))}
