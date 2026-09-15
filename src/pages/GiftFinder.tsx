@@ -9,6 +9,7 @@ import { useProducts } from '@/context/ProductContext';
 import { formatPrice } from '@/data/products';
 import { useSiteAssets, getDynamicAsset } from '@/context/SiteAssetsContext';
 import { heroImages } from '@/data/site';
+import { SITE_ASSET_KEYS } from '@/utils/siteAssetKeys';
 import { giftFinderMessage } from '@/utils/whatsapp';
 import { trackEvent } from '@/utils/analytics';
 import SEO from '@/components/SEO';
@@ -120,7 +121,7 @@ export default function GiftFinder() {
           <div className="lg:col-span-5">
             <div className="aspect-[16/9] rounded-atelier-img overflow-hidden shadow-soft">
               <img
-                src={getDynamicAsset(assets, 'home_gift_finder')}
+                src={getDynamicAsset(assets, SITE_ASSET_KEYS.GIFT_FINDER_HERO)}
                 alt="Gift Finder Experience"
                 className="w-full h-full object-cover"
               />

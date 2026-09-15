@@ -1,6 +1,7 @@
 import { Droplets, Sun, Wind, Sparkles, Hand, AlertCircle } from 'lucide-react';
 import Reveal from '@/components/Reveal';
-import { heroImages } from '@/data/site';
+import { useSiteAssets, getDynamicAsset } from '@/context/SiteAssetsContext';
+import { SITE_ASSET_KEYS } from '@/utils/siteAssetKeys';
 import SEO from '@/components/SEO';
 
 const careTips = [
@@ -13,6 +14,7 @@ const careTips = [
 ];
 
 export default function CareGuide() {
+  const { assets } = useSiteAssets();
   return (
     <div className="bg-linen min-h-screen">
       <SEO
@@ -36,7 +38,7 @@ export default function CareGuide() {
           <div className="lg:col-span-5">
             <div className="aspect-[16/9] rounded-atelier-img overflow-hidden shadow-soft">
               <img
-                src={heroImages.secondary}
+                src={getDynamicAsset(assets, SITE_ASSET_KEYS.CARE_GUIDE_HERO)}
                 alt="Care guide illustration"
                 className="w-full h-full object-cover"
               />
@@ -63,7 +65,7 @@ export default function CareGuide() {
 
           <Reveal className="mt-16 bg-bark-dark p-12 lg:p-16 rounded-atelier-panel text-center shadow-xl relative overflow-hidden">
             <div className="absolute inset-0 opacity-10">
-              <img src={heroImages.texture} alt="" className="w-full h-full object-cover" />
+              <img src={getDynamicAsset(assets, SITE_ASSET_KEYS.CARE_GUIDE_BG)} alt="" className="w-full h-full object-cover" />
             </div>
             <div className="relative z-10">
               <h3 className="font-serif text-3xl lg:text-4xl text-linen mb-6">

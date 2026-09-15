@@ -15,6 +15,7 @@ import {
   instagramPosts, heroImages, brandInfo, budgetFilters,
   howItWorksSteps, faqs,
 } from '@/data/site';
+import { SITE_ASSET_KEYS } from '@/utils/siteAssetKeys';
 import { customOrderMessage } from '@/utils/whatsapp';
 import { trackEvent } from '@/utils/analytics';
 import { useProducts } from '@/context/ProductContext';
@@ -34,22 +35,36 @@ const OCCASION_BLOBS = [
     name: 'Anniversaries',
     count: '18 pieces',
     slug: 'Anniversary',
-    image: 'https://images.pexels.com/photos/36399728/pexels-photo-36399728.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+    key: SITE_ASSET_KEYS.HOME_OCCASION_ANNIVERSARY,
     color: 'bg-rose-400'
   },
   {
     name: 'Just because',
     count: '24 pieces',
     slug: 'Just Because',
-    image: 'https://images.pexels.com/photos/17555771/pexels-photo-17555771.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+    key: SITE_ASSET_KEYS.HOME_OCCASION_JUST_BECAUSE,
     color: 'bg-sage-400'
   },
   {
     name: 'Friendship',
     count: '12 pieces',
-    slug: 'Friendship', // Using Friendship as a proxy for 'New homes' since it's in site.ts
-    image: 'https://images.pexels.com/photos/16536447/pexels-photo-16536447.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+    slug: 'Friendship',
+    key: SITE_ASSET_KEYS.HOME_OCCASION_FRIENDSHIP,
     color: 'bg-pink-400'
+  },
+  {
+    name: "Mother's Day",
+    count: '15 pieces',
+    slug: "Mother's Day",
+    key: SITE_ASSET_KEYS.HOME_OCCASION_MOTHERS_DAY,
+    color: 'bg-rose-200'
+  },
+  {
+    name: "Valentine's Day",
+    count: '20 pieces',
+    slug: "Valentine's Day",
+    key: SITE_ASSET_KEYS.HOME_OCCASION_VALENTINES_DAY,
+    color: 'bg-rose-500'
   },
 ];
 
@@ -209,7 +224,7 @@ export default function Home() {
                     className={`aspect-square ${blob.color} rounded-[40%_60%_70%_30%/40%_50%_60%_50%] transition-all duration-500 group-hover:scale-105 shadow-soft overflow-hidden relative`}
                   >
                     <img
-                      src={blob.image}
+                      src={getDynamicAsset(assets, blob.key)}
                       alt={blob.name}
                       className="w-full h-full object-cover mix-blend-multiply opacity-80 group-hover:opacity-100 transition-opacity duration-500"
                     />

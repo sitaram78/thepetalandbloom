@@ -95,6 +95,22 @@ export const occasions = [
     emojiColor: 'text-gold-600',
     emojiBg: 'bg-gold-200',
   },
+  {
+    name: "Valentine's Day",
+    description: 'The ultimate expression of love.',
+    image: 'https://images.pexels.com/photos/36399728/pexels-photo-36399728.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+    filter: "Valentine's Day",
+    color: 'bg-rose-400',
+    textColor: 'text-rose-800',
+    icon: 'Heart',
+    slug: 'valentines-day',
+    tags: ["Valentine's Day"],
+    descriptionLong: 'The ultimate expression of love.',
+    imageAlt: 'Red roses for Valentine\'s Day',
+    emoji: 'Heart',
+    emojiColor: 'text-rose-600',
+    emojiBg: 'bg-rose-100',
+  },
 ];
 
 export const budgetFilters = [
@@ -117,8 +133,10 @@ export const giftingOccasions = [
   'Birthday',
   'Anniversary',
   'Friendship',
+  "Mother's Day",
   "Valentine's Day",
   'Just Because',
+  'Festivals',
 ];
 
 export const addOns = [

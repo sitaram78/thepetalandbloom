@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { SlidersHorizontal, X, Search, ChevronDown, LayoutGrid, List } from 'lucide-react';
+import { supabase } from '@/lib/supabaseClient';
 import ProductGrid from '@/components/ProductGrid';
 import ProductList from '@/components/ProductList';
 import ProductSkeleton from '@/components/ProductSkeleton';
@@ -14,10 +15,10 @@ import { type ProductCategory, formatPrice } from '@/data/products';
 import { occasions, heroImages, budgetFilters, giftingOccasions } from '@/data/site';
 import { buildWhatsAppLink, generalEnquiryMessage } from '@/utils/whatsapp';
 import { trackEvent } from '@/utils/analytics';
+import { useSiteAssets, getDynamicAsset } from '@/context/SiteAssetsContext';
 import { useProducts } from '@/context/ProductContext';
-import { getCache, setCache } from '@/utils/cache';
-import { supabase } from '@/lib/supabaseClient';
 import { filterProducts } from '@/utils/productSearch';
+import { SITE_ASSET_KEYS } from '@/utils/siteAssetKeys';
 
 const sortOptions = [
   { label: 'Recommended', value: 'featured' },
@@ -55,7 +56,8 @@ const BLOB_SHAPES = [
 ];
 
 export default function ShopPage() {
-  const { products, loading } = useProducts();
+  const { products, loading: productLoading } = useProducts();
+  const { assets, loading: assetsLoading } = useSiteAssets();
   const [searchParams, setSearchParams] = useSearchParams();
   const occasionFilter = searchParams.get('occasion') || '';
   const budgetFilter = searchParams.get('budget') || '';
@@ -160,9 +162,42 @@ export default function ShopPage() {
 
   // Dynamic Hero Image Logic
   const activeCategoryData = categories.find(c => c.value === category);
-  const heroImage = activeCategoryData?.image_url || heroImages.secondary;
 
-  if (loading) {
+  const getOccasionAssetKey = (filter: string) => {
+    const occasion = occasions.find(o => o.filter === filter);
+    if (!occasion) return null;
+
+    // Map the occasion filter to the home_occasion keys we defined
+    const mapping: Record<string, string> = {
+      'Birthday': SITE_ASSET_KEYS.HOME_OCCASION_BIRTHDAY,
+      'Anniversary': SITE_ASSET_KEYS.HOME_OCCASION_ANNIVERSARY,
+      'Friendship': SITE_ASSET_KEYS.HOME_OCCASION_FRIENDSHIP,
+      'Just Because': SITE_ASSET_KEYS.HOME_OCCASION_JUST_BECAUSE,
+      "Mother's Day": SITE_ASSET_KEYS.HOME_OCCASION_MOTHERS_DAY,
+      "Valentine's Day": SITE_ASSET_KEYS.HOME_OCCASION_VALENTINES_DAY,
+      'Festivals': SITE_ASSET_KEYS.HOME_OCCASION_FESTIVALS,
+    };
+
+    return mapping[occasion.filter] || null;
+  };
+
+  const heroImage = useMemo(() => {
+    // Priority 1: Occasion
+    if (occasionFilter) {
+      const occasionKey = getOccasionAssetKey(occasionFilter);
+      if (occasionKey) return getDynamicAsset(assets, occasionKey);
+    }
+
+    // Priority 2: Category
+    if (category !== 'all' && activeCategoryData) {
+      return getDynamicAsset(assets, `cat_${activeCategoryData.value}_hero`);
+    }
+
+    // Priority 3: Default Shop Hero
+    return getDynamicAsset(assets, SITE_ASSET_KEYS.SHOP_HERO_DEFAULT);
+  }, [assets, occasionFilter, category, activeCategoryData]);
+
+  if (productLoading || assetsLoading) {
     return (
       <div className="bg-linen min-h-screen">
         <div className="container-lux py-24 text-center">
@@ -247,30 +282,33 @@ export default function ShopPage() {
               <span className={`text-xs font-medium transition-colors ${category === 'all' ? 'text-rose-deep' : 'text-ink-light'}`}>All</span>
             </button>
 
-            {categories.map((cat, idx) => (
-              <button
-                key={cat.value}
-                onClick={() => handleCategoryChange(cat.value as ProductCategory)}
-                className="flex-shrink-0 flex flex-col items-center gap-3 group w-24"
-              >
-                <div className={`w-20 h-20 transition-all duration-300 overflow-hidden ${category === cat.value ? 'scale-110 ring-2 ring-rose' : 'group-hover:scale-105'} relative shadow-sm`}
-                     style={{
-                       borderRadius: BLOB_SHAPES[(idx + 1) % BLOB_SHAPES.length],
-                       background: cat.image_url ? 'none' : getCategoryColor(cat.value)
-                     }}>
-                  {cat.image_url ? (
-                    <img src={cat.image_url} alt={cat.label} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-white font-serif italic text-sm">
-                      {cat.label[0]}
-                    </div>
-                  )}
-                </div>
-                <span className={`text-xs font-medium transition-colors ${category === cat.value ? 'text-rose-deep' : 'text-ink-light'}`}>
-                  {cat.label}
-                </span>
-              </button>
-            ))}
+            {categories.map((cat, idx) => {
+              const catImage = getDynamicAsset(assets, `cat_${cat.value}_hero`);
+              return (
+                <button
+                  key={cat.value}
+                  onClick={() => handleCategoryChange(cat.value as ProductCategory)}
+                  className="flex-shrink-0 flex flex-col items-center gap-3 group w-24"
+                >
+                  <div className={`w-20 h-20 transition-all duration-300 overflow-hidden ${category === cat.value ? 'scale-110 ring-2 ring-rose' : 'group-hover:scale-105'} relative shadow-sm`}
+                       style={{
+                         borderRadius: BLOB_SHAPES[(idx + 1) % BLOB_SHAPES.length],
+                         background: catImage ? 'none' : getCategoryColor(cat.value)
+                       }}>
+                    {catImage ? (
+                      <img src={catImage} alt={cat.label} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-white font-serif italic text-sm">
+                        {cat.label[0]}
+                      </div>
+                    )}
+                  </div>
+                  <span className={`text-xs font-medium transition-colors ${category === cat.value ? 'text-rose-deep' : 'text-ink-light'}`}>
+                    {cat.label}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </div>
       </section>

@@ -1,15 +1,18 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
-import { heroImages } from '@/data/site';
 import { getCache, setCache, removeCache } from '@/utils/cache';
+import { heroImages } from '@/data/site';
+import { SITE_ASSET_KEYS } from '@/utils/siteAssetKeys';
 
-interface SiteAsset {
+export interface SiteAsset {
   section_key: string;
+  label: string;
+  description: string;
   image_url: string;
 }
 
 interface SiteAssetsContextType {
-  assets: Record<string, string>;
+  assets: Record<string, SiteAsset>;
   loading: boolean;
   updateAsset: (key: string, url: string) => Promise<{ error?: Error }>;
   refreshAssets: () => Promise<void>;
@@ -18,14 +21,13 @@ interface SiteAssetsContextType {
 const SiteAssetsContext = createContext<SiteAssetsContextType | undefined>(undefined);
 
 export function SiteAssetsProvider({ children }: { children: React.ReactNode }) {
-  const [assets, setAssets] = useState<Record<string, string>>({});
+  const [assets, setAssets] = useState<Record<string, SiteAsset>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchAssets() {
       try {
-        // 1. Try to get from cache first
-        const cached = getCache<Record<string, string>>('site_assets_cache');
+        const cached = getCache<Record<string, SiteAsset>>('site_assets_cache');
         if (cached) {
           setAssets(cached);
           setLoading(false);
@@ -34,14 +36,14 @@ export function SiteAssetsProvider({ children }: { children: React.ReactNode }) 
 
         const { data, error } = await supabase
           .from('site_assets')
-          .select('section_key, image_url');
+          .select('section_key, label, description, image_url');
 
         if (error) {
           console.error('Error fetching site assets:', error);
         } else if (data) {
-          const assetsMap: Record<string, string> = {};
+          const assetsMap: Record<string, SiteAsset> = {};
           data.forEach((asset) => {
-            assetsMap[asset.section_key] = asset.image_url;
+            assetsMap[asset.section_key] = asset;
           });
           setAssets(assetsMap);
           setCache('site_assets_cache', assetsMap);
@@ -58,7 +60,6 @@ export function SiteAssetsProvider({ children }: { children: React.ReactNode }) 
 
   const updateAsset = async (key: string, url: string) => {
     try {
-      // Try updating first since we've migrated the data
       const { data, error: updateError } = await supabase
         .from('site_assets')
         .update({ image_url: url })
@@ -67,7 +68,6 @@ export function SiteAssetsProvider({ children }: { children: React.ReactNode }) 
 
       if (updateError) throw updateError;
 
-      // If no row was updated, it means the key doesn't exist yet, so we insert
       if (!data || data.length === 0) {
         const { error: insertError } = await supabase
           .from('site_assets')
@@ -76,7 +76,13 @@ export function SiteAssetsProvider({ children }: { children: React.ReactNode }) 
         if (insertError) throw insertError;
       }
 
-      setAssets((prev) => ({ ...prev, [key]: url }));
+      setAssets((prev) => ({
+        ...prev,
+        [key]: {
+          ...prev[key],
+          image_url: url
+        } as SiteAsset
+      }));
       removeCache('site_assets_cache');
       return { error: null };
     } catch (error: any) {
@@ -85,36 +91,20 @@ export function SiteAssetsProvider({ children }: { children: React.ReactNode }) 
     }
   };
 
-  // Helper to get asset with fallback to static data
-  const getAsset = (key: string) => {
-    // Map section_key to heroImages keys
-    const mapping: Record<string, keyof typeof heroImages> = {
-      'home_hero_primary': 'primary',
-      'home_hero_secondary': 'secondary',
-      'home_hero_texture': 'texture',
-      'home_hero_hands': 'hands',
-      'home_hero_yarn': 'yarn',
-      'home_gift_finder': 'giftBox',
-    };
-
-    const staticKey = mapping[key];
-    return assets[key] || (staticKey ? heroImages[staticKey] : '');
-  };
-
   const refreshAssets = async () => {
     setLoading(true);
     removeCache('site_assets_cache');
     try {
       const { data, error } = await supabase
         .from('site_assets')
-        .select('section_key, image_url');
+        .select('section_key, label, description, image_url');
 
       if (error) {
         console.error('Error refreshing site assets:', error);
       } else if (data) {
-        const assetsMap: Record<string, string> = {};
+        const assetsMap: Record<string, SiteAsset> = {};
         data.forEach((asset) => {
-          assetsMap[asset.section_key] = asset.image_url;
+          assetsMap[asset.section_key] = asset;
         });
         setAssets(assetsMap);
         setCache('site_assets_cache', assetsMap);
@@ -141,23 +131,21 @@ export function useSiteAssets() {
   return context;
 }
 
-// Extra helper for components to avoid repeating mapping logic
-export function getDynamicAsset(assets: Record<string, string>, key: string) {
+export function getDynamicAsset(assets: Record<string, SiteAsset>, key: string) {
   const mapping: Record<string, keyof typeof heroImages> = {
-    'home_hero_primary': 'primary',
-    'home_hero_secondary': 'secondary',
-    'home_hero_texture': 'texture',
-    'home_hero_hands': 'hands',
-    'home_hero_yarn': 'yarn',
-    'home_gift_finder': 'giftBox',
+    [SITE_ASSET_KEYS.HOME_HERO_PRIMARY]: 'primary',
+    [SITE_ASSET_KEYS.HOME_HERO_SECONDARY]: 'secondary',
+    [SITE_ASSET_KEYS.HOME_HERO_TEXTURE]: 'texture',
+    [SITE_ASSET_KEYS.HOME_HERO_HANDS]: 'hands',
+    [SITE_ASSET_KEYS.HOME_HERO_YARN]: 'yarn',
+    [SITE_ASSET_KEYS.GIFT_FINDER_HERO]: 'giftBox',
   };
 
   const staticKey = mapping[key];
-  const url = assets[key] || (staticKey ? heroImages[staticKey] : '');
+  const url = assets[key]?.image_url || (staticKey ? heroImages[staticKey] : '');
 
   if (!url) return '';
 
-  // Add a cache-buster timestamp if it's a Supabase URL
   if (url.includes('supabase.co')) {
     const separator = url.includes('?') ? '&' : '?';
     return `${url}${separator}v=${Date.now()}`;

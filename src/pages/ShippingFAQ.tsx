@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import { Plus, Minus, Truck, Clock, Package } from 'lucide-react';
 import Reveal from '@/components/Reveal';
-import { faqs, heroImages } from '@/data/site';
+import { useSiteAssets, getDynamicAsset } from '@/context/SiteAssetsContext';
+import { SITE_ASSET_KEYS } from '@/utils/siteAssetKeys';
+import { faqs } from '@/data/site';
 import { formatPrice } from '@/data/products';
 import SEO from '@/components/SEO';
 
 export default function ShippingFAQ() {
+  const { assets } = useSiteAssets();
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
@@ -31,7 +34,7 @@ export default function ShippingFAQ() {
           <div className="lg:col-span-5">
             <div className="aspect-[16/9] rounded-atelier-img overflow-hidden shadow-soft">
               <img
-                src={heroImages.giftBox}
+                src={getDynamicAsset(assets, SITE_ASSET_KEYS.SHIPPING_FAQ_HERO)}
                 alt="Shipping and packaging"
                 className="w-full h-full object-cover"
               />

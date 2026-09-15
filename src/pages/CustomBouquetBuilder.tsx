@@ -3,7 +3,8 @@ import { ArrowLeft, ArrowRight, Check, MessageCircle, Clock, PenTool, Flower2, P
 import Reveal from '@/components/Reveal';
 import WhatsAppButton from '@/components/WhatsAppButton';
 import AtelierButton from '@/components/AtelierButton';
-import { heroImages } from '@/data/site';
+import { useSiteAssets, getDynamicAsset } from '@/context/SiteAssetsContext';
+import { SITE_ASSET_KEYS } from '@/utils/siteAssetKeys';
 import { formatPrice } from '@/data/products';
 import { customBouquetBuilderMessage } from '@/utils/whatsapp';
 import { trackEvent } from '@/utils/analytics';
@@ -41,6 +42,7 @@ const COLOR_MAP: Record<string, { active: string; inactive: string; textActive: 
 };
 
 export default function CustomBouquetBuilder() {
+  const { assets } = useSiteAssets();
   const [step, setStep] = useState(0);
   const [size, setSize] = useState('');
   const [flowers, setFlowers] = useState<string[]>([]);
@@ -133,7 +135,7 @@ export default function CustomBouquetBuilder() {
           <div className="lg:col-span-5">
             <div className="aspect-[16/9] rounded-atelier-img overflow-hidden shadow-soft">
               <img
-                src={heroImages.primary}
+                src={getDynamicAsset(assets, SITE_ASSET_KEYS.CUSTOM_BUILDER_HERO)}
                 alt="Custom bouquet building"
                 className="w-full h-full object-cover"
               />

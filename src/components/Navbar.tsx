@@ -6,6 +6,8 @@ import { formatPrice } from '@/data/products';
 import { useCart } from '@/context/CartContext';
 import { useWishlist } from '@/context/WishlistContext';
 import { useProducts } from '@/context/ProductContext';
+import { useSiteAssets, getDynamicAsset } from '@/context/SiteAssetsContext';
+import { SITE_ASSET_KEYS } from '@/utils/siteAssetKeys';
 import { buildWhatsAppLink, generalEnquiryMessage } from '@/utils/whatsapp';
 import { trackEvent } from '@/utils/analytics';
 import { useClickOutside } from '@/hooks/useClickOutside';
@@ -21,6 +23,7 @@ export default function Navbar() {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
 
+  const { assets } = useSiteAssets();
   const { navItems, loading: navLoading } = useNavigation();
   const location = useLocation();
   const navigate = useNavigate();
@@ -100,7 +103,11 @@ export default function Navbar() {
         <nav className="container-lux flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
           <Link to="/" className="flex-shrink-0 flex items-center gap-3" aria-label="The Petal & Bloom home">
-            <img src="/logo.jpeg" alt="The Petal & Bloom Logo" className="w-10 h-10 rounded-full object-cover shadow-sm border border-canvas-line" />
+            <img
+              src={getDynamicAsset(assets, SITE_ASSET_KEYS.LOGO)}
+              alt="The Petal & Bloom Logo"
+              className="w-10 h-10 rounded-full object-cover shadow-sm border border-canvas-line"
+            />
             <span className="font-serif text-lg lg:text-xl font-medium tracking-wide text-bark leading-tight hidden sm:inline">
               THE PETAL<span className="text-rose"> &amp; </span>BLOOM
             </span>

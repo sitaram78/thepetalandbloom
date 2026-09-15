@@ -8,6 +8,11 @@ export default function Footer() {
   const { navItems } = useNavigation();
   const topLevelNav = navItems.filter(item => !item.parent_id).sort((a, b) => a.order - b.order);
 
+  const infoPaths = ['/care-guide', '/shipping', '/contact', '/custom'];
+  const infoNav = navItems
+    .filter(item => infoPaths.includes(item.path || ''))
+    .sort((a, b) => a.order - b.order);
+
   return (
     <footer className="bg-bark-dark text-linen mt-10">
       <div className="container-lux py-10 lg:py-16">
@@ -41,8 +46,6 @@ export default function Footer() {
                   </Link>
                 </li>
               ))}
-              <li><Link to="/decor" className="text-sm text-linen/60 hover:text-rose transition-colors duration-300">Home Décor</Link></li>
-              <li><Link to="/gift-boxes" className="text-sm text-linen/60 hover:text-rose transition-colors duration-300">Gift Boxes</Link></li>
             </ul>
           </div>
 
@@ -51,10 +54,16 @@ export default function Footer() {
           <div className="space-y-4">
             <h4 className="text-[10px] uppercase tracking-[0.2em] text-parchment-50/40 mb-4 font-semibold">Information</h4>
             <ul className="space-y-2">
-              <li><Link to="/care-guide" className="text-sm text-linen/60 hover:text-rose transition-colors duration-300">Care Guide</Link></li>
-              <li><Link to="/shipping" className="text-sm text-linen/60 hover:text-rose transition-colors duration-300">Shipping &amp; FAQ</Link></li>
-              <li><Link to="/contact" className="text-sm text-linen/60 hover:text-rose transition-colors duration-300">Contact</Link></li>
-              <li><Link to="/custom" className="text-sm text-linen/60 hover:text-rose transition-colors duration-300">Custom Orders</Link></li>
+              {infoNav.map((link) => (
+                <li key={link.id}>
+                  <Link
+                    to={link.path || '#'}
+                    className="text-sm text-linen/60 hover:text-rose transition-colors duration-300"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
             <h4 className="text-[10px] uppercase tracking-[0.2em] text-linen/40 mb-3 mt-8 font-semibold">Policies</h4>
             <ul className="space-y-2">

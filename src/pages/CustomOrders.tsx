@@ -5,12 +5,15 @@ import Reveal from '@/components/Reveal';
 import WhatsAppButton from '@/components/WhatsAppButton';
 import SectionHeading from '@/components/SectionHeading';
 import SEO from '@/components/SEO';
-import { heroImages, addOns } from '@/data/site';
+import { useSiteAssets, getDynamicAsset } from '@/context/SiteAssetsContext';
+import { SITE_ASSET_KEYS } from '@/utils/siteAssetKeys';
+import { addOns } from '@/data/site';
 import { formatPrice } from '@/data/products';
 import { customOrderMessage } from '@/utils/whatsapp';
 import { trackEvent } from '@/utils/analytics';
 
 export default function CustomOrders() {
+  const { assets } = useSiteAssets();
   return (
     <div>
       <SEO
@@ -23,7 +26,7 @@ export default function CustomOrders() {
         label="Custom orders"
         title={<>Your flowers. Your colours. Your story.</>}
         subtitle="Not every story fits a standard bouquet. Create something uniquely yours — choose every detail, and we will handcraft it from scratch."
-        image={heroImages.primary}
+        image={getDynamicAsset(assets, SITE_ASSET_KEYS.CUSTOM_ORDERS_HERO)}
       />
 
       {/* Guided builder CTA */}

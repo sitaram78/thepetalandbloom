@@ -4,11 +4,13 @@ import Reveal from '@/components/Reveal';
 import SectionHeading from '@/components/SectionHeading';
 import WhatsAppButton from '@/components/WhatsAppButton';
 import AtelierButton from '@/components/AtelierButton';
-import { heroImages, brandInfo } from '@/data/site';
+import { useSiteAssets, getDynamicAsset } from '@/context/SiteAssetsContext';
+import { SITE_ASSET_KEYS } from '@/utils/siteAssetKeys';
 import { generalEnquiryMessage } from '@/utils/whatsapp';
 import SEO from '@/components/SEO';
 
 export default function About() {
+  const { assets } = useSiteAssets();
   return (
     <div className="bg-linen">
       <SEO
@@ -32,7 +34,7 @@ export default function About() {
           <div className="lg:col-span-5">
             <div className="aspect-[16/9] rounded-atelier-img overflow-hidden shadow-soft">
               <img
-                src={heroImages.hands}
+                src={getDynamicAsset(assets, SITE_ASSET_KEYS.ABOUT_HERO)}
                 alt="Studio crafting"
                 className="w-full h-full object-cover"
               />
@@ -123,10 +125,10 @@ export default function About() {
           />
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
             {[
-              { img: heroImages.yarn, label: 'Yarn' },
-              { img: heroImages.texture, label: 'Stitch by stitch' },
-              { img: heroImages.hands, label: 'Shaped by hand' },
-              { img: heroImages.primary, label: 'Finished bloom' },
+              { img: getDynamicAsset(assets, SITE_ASSET_KEYS.ABOUT_PROCESS_YARN), label: 'Yarn' },
+              { img: getDynamicAsset(assets, SITE_ASSET_KEYS.ABOUT_PROCESS_TEXTURE), label: 'Stitch by stitch' },
+              { img: getDynamicAsset(assets, SITE_ASSET_KEYS.ABOUT_PROCESS_HANDS), label: 'Shaped by hand' },
+              { img: getDynamicAsset(assets, SITE_ASSET_KEYS.ABOUT_PROCESS_FINISHED), label: 'Finished bloom' },
             ].map((step, i) => (
               <Reveal key={i} delay={i * 80}>
                 <div className="group cursor-default">
@@ -144,7 +146,7 @@ export default function About() {
       {/* CTA */}
       <section className="py-16 lg:py-20 bg-bark-dark relative overflow-hidden">
         <div className="absolute inset-0 opacity-20">
-          <img src={heroImages.secondary} alt="" className="w-full h-full object-cover" />
+          <img src={getDynamicAsset(assets, SITE_ASSET_KEYS.ABOUT_CTA_BG)} alt="" className="w-full h-full object-cover" />
         </div>
         <div className="container-lux relative z-10 text-center">
           <Reveal>

@@ -37,21 +37,14 @@ export default function MobileBottomNav() {
         </Link>
 
         <Link
-          to="/wishlist"
-          className={`relative flex flex-col items-center justify-center gap-1 w-16 h-full transition-colors ${
-            isActive('/wishlist') ? 'text-rose-deep' : 'text-ink-light'
+          to="/gift-finder"
+          className={`flex flex-col items-center justify-center gap-1 w-16 h-full transition-colors ${
+            isActive('/gift-finder') ? 'text-rose-deep' : 'text-ink-light'
           }`}
-          aria-label={`Wishlist with ${count} items`}
+          aria-label="Gift Finder"
         >
-          <div className="relative">
-            <Heart size={20} strokeWidth={1.5} />
-            {count > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 bg-rose text-linen text-[8px] font-medium w-3.5 h-3.5 rounded-full flex items-center justify-center">
-                {count}
-              </span>
-            )}
-          </div>
-          <span className="text-[10px] font-medium">Saved</span>
+          <Search size={20} strokeWidth={1.5} />
+          <span className="text-[10px] font-medium">Gift Finder</span>
         </Link>
 
         <button

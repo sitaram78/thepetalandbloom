@@ -3,11 +3,14 @@ import { Instagram, MessageCircle, Mail, Clock, Send } from 'lucide-react';
 import Reveal from '@/components/Reveal';
 import WhatsAppButton from '@/components/WhatsAppButton';
 import AtelierButton from '@/components/AtelierButton';
-import { brandInfo, heroImages } from '@/data/site';
+import { brandInfo } from '@/data/site';
+import { useSiteAssets, getDynamicAsset } from '@/context/SiteAssetsContext';
+import { SITE_ASSET_KEYS } from '@/utils/siteAssetKeys';
 import { buildWhatsAppLink, generalEnquiryMessage } from '@/utils/whatsapp';
 import SEO from '@/components/SEO';
 
 export default function Contact() {
+  const { assets } = useSiteAssets();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
@@ -49,7 +52,7 @@ export default function Contact() {
           <div className="lg:col-span-5">
             <div className="aspect-[16/9] rounded-atelier-img overflow-hidden shadow-soft">
               <img
-                src={heroImages.secondary}
+                src={getDynamicAsset(assets, SITE_ASSET_KEYS.CONTACT_HERO)}
                 alt="Studio contact"
                 className="w-full h-full object-cover"
               />
