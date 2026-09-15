@@ -13,7 +13,7 @@ import { useSiteAssets, getDynamicAsset } from '@/context/SiteAssetsContext';
 import {
   occasions, trustStrip, bouquetTiers, addOns, giftingOccasions,
   instagramPosts, heroImages, brandInfo, budgetFilters,
-  howItWorksSteps, faqs,
+  howItWorksSteps,
 } from '@/data/site';
 import { SITE_ASSET_KEYS } from '@/utils/siteAssetKeys';
 import { customOrderMessage } from '@/utils/whatsapp';
@@ -69,14 +69,14 @@ const OCCASION_BLOBS = [
 ];
 
 export default function Home() {
-  const { products, getBestsellers, loading: productLoading } = useProducts();
+  const { products, getBestsellers, getFeatured, loading: productLoading } = useProducts();
   const { assets, loading: assetsLoading } = useSiteAssets();
   const { addItem } = useCart();
   const [seasonCategory, setSeasonCategory] = useState<string>('All');
   const [featuredImageIndex, setFeaturedImageIndex] = useState(0);
   const [featuredSelectedColor, setFeaturedSelectedColor] = useState('');
   const bestsellers = getBestsellers();
-  const featuredProduct = products ? products.find((p) => p.code === 'TPB-BQ-003') : undefined;
+  const featuredProduct = getFeatured()[0];
 
   const seasonProducts = (() => {
     if (!products) return [];
@@ -199,7 +199,7 @@ export default function Home() {
       </section>
 
       {/* 04. OCCASIONS */}
-      <section className="py-32 lg:py-48 bg-canvas">
+      <section className="py-24 sm:py-32 lg:py-48 bg-canvas">
         <div className="container-lux">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-20">
             <Reveal>
@@ -214,7 +214,7 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-12">
-            {OCCASION_BLOBS.map((blob, i) => (
+            {OCCASION_BLOBS.slice(0, 3).map((blob, i) => (
               <Reveal key={blob.name} delay={i * 100}>
                 <Link
                   to={`/shop?occasion=${blob.slug}`}
@@ -289,9 +289,9 @@ export default function Home() {
           <Reveal className="mb-12">
             <span className="font-serif italic text-sm text-rose">A closer look — product page</span>
           </Reveal>
-          <div className="grid lg:grid-cols-12 gap-16 items-start">
+          <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-start">
             <Reveal className="lg:col-span-7">
-              <div className="relative aspect-[4/5] overflow-hidden rounded-atelier-img bg-linen shadow-soft">
+              <div className="relative aspect-square sm:aspect-[4/5] overflow-hidden rounded-atelier-img bg-linen shadow-soft">
                 {featuredProduct && (
                   <img
                     src={featuredProduct.images[featuredImageIndex]}
@@ -313,56 +313,60 @@ export default function Home() {
               </div>
             </Reveal>
             <Reveal delay={100} className="lg:col-span-5">
-              <div className="bg-linen p-10 rounded-[2px_30px_2px_30px] shadow-soft space-y-8">
-                <div>
-                  <span className="text-xs text-ink-light font-light">{featuredProduct?.code}</span>
-                  <h2 className="font-serif text-4xl text-bark mt-2">{featuredProduct?.name}</h2>
-                  <p className="font-serif text-2xl text-rose mt-4">{featuredProduct ? formatPrice(featuredProduct.price) : ''}</p>
-                  <p className="text-ink-light mt-6 leading-relaxed font-light">
-                    {featuredProduct?.description}
-                  </p>
-                </div>
+              {featuredProduct ? (
+                <div className="bg-linen p-6 sm:p-10 rounded-[2px_30px_2px_30px] shadow-soft space-y-8">
+                  <div>
+                    <span className="text-xs text-ink-light font-light">{featuredProduct.code}</span>
+                    <h2 className="font-serif text-3xl sm:text-4xl text-bark mt-2">{featuredProduct.name}</h2>
+                    <p className="font-serif text-2xl text-rose mt-4">{formatPrice(featuredProduct.price)}</p>
+                    <p className="text-ink-light mt-6 leading-relaxed font-light">
+                      {featuredProduct.description}
+                    </p>
+                  </div>
 
-                <div className="space-y-4">
-                  <p className="text-xs uppercase tracking-wider text-ink font-medium">Colour</p>
-                  <div className="flex flex-wrap gap-3">
-                    {featuredProduct?.colors?.map((color) => (
-                      <button
-                        key={color}
-                        onClick={() => setFeaturedSelectedColor(color)}
-                        className={`px-4 py-2 rounded-full text-sm border transition-all ${featuredSelectedColor === color ? 'bg-bark text-linen border-bark' : 'border-canvas-line text-ink-light hover:border-rose'}`}
-                      >
-                        {color}
-                      </button>
-                    ))}
+                  <div className="space-y-4">
+                    <p className="text-xs uppercase tracking-wider text-ink font-medium">Colour</p>
+                    <div className="flex flex-wrap gap-3">
+                      {featuredProduct.colors?.map((color) => (
+                        <button
+                          key={color}
+                          onClick={() => setFeaturedSelectedColor(color)}
+                          className={`px-4 py-2 rounded-full text-sm border transition-all ${featuredSelectedColor === color ? 'bg-bark text-linen border-bark' : 'border-canvas-line text-ink-light hover:border-rose'}`}
+                        >
+                          {color}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <AtelierButton
+                      variant="primary"
+                      className="w-full justify-center py-4"
+                      onClick={() => addItem(featuredProduct, { color: featuredSelectedColor || undefined, quantity: 1 })}
+                    >
+                      Add to bag
+                    </AtelierButton>
+                    <AtelierButton
+                      variant="ghost"
+                      className="w-full justify-center py-4"
+                      onClick={() => window.open(`https://wa.me/${brandInfo.whatsappNumber}?text=${encodeURIComponent(customOrderMessage())}`, '_blank')}
+                    >
+                      Add a handwritten note
+                    </AtelierButton>
                   </div>
                 </div>
-
-                <div className="space-y-3">
-                  <AtelierButton
-                    variant="primary"
-                    className="w-full justify-center py-4"
-                    onClick={() => {
-                      if (featuredProduct) {
-                        addItem(featuredProduct, { color: featuredSelectedColor || undefined, quantity: 1 });
-                      }
-                    }}
-                  >
-                    Add to bag
-                  </AtelierButton>
-                  <AtelierButton
-                    variant="ghost"
-                    className="w-full justify-center py-4"
-                    onClick={() => {
-                      if (featuredProduct) {
-                        window.open(`https://wa.me/${brandInfo.whatsappNumber}?text=${encodeURIComponent(customOrderMessage(featuredProduct))}`, '_blank');
-                      }
-                    }}
-                  >
-                    Add a handwritten note
-                  </AtelierButton>
+              ) : (
+                <div className="bg-linen p-6 sm:p-10 rounded-[2px_30px_2px_30px] shadow-soft">
+                  <h2 className="font-serif text-3xl sm:text-4xl text-bark">A new studio choice is coming soon.</h2>
+                  <p className="text-ink-light mt-6 leading-relaxed font-light">
+                    We are preparing the next featured piece by hand. Explore the full collection while it is being finished.
+                  </p>
+                  <Link to="/shop" className="inline-block mt-8 text-sm text-ink-light font-medium underline underline-offset-4 hover:text-rose transition-colors">
+                    Explore the full shop
+                  </Link>
                 </div>
-              </div>
+              )}
             </Reveal>
           </div>
         </div>

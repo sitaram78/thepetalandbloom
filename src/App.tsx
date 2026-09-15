@@ -18,14 +18,11 @@ import CustomOrders from '@/pages/CustomOrders';
 import CustomBouquetBuilder from '@/pages/CustomBouquetBuilder';
 import GiftFinder from '@/pages/GiftFinder';
 import About from '@/pages/About';
-import CareGuide from '@/pages/CareGuide';
-import ShippingFAQ from '@/pages/ShippingFAQ';
 import Contact from '@/pages/Contact';
 import ProductDetail from '@/pages/ProductDetail';
 import Privacy from '@/pages/Privacy';
 import Terms from '@/pages/Terms';
 import Refund from '@/pages/Refund';
-import MigrationPage from '@/pages/MigrationPage';
 import AdminLogin from '@/pages/AdminLogin';
 import AdminRoute from '@/components/AdminRoute';
 import AdminDashboard from '@/pages/AdminDashboard';
@@ -57,8 +54,6 @@ function AppContent() {
           <Route path="/custom-bouquet" element={<CustomBouquetBuilder />} />
           <Route path="/gift-finder" element={<GiftFinder />} />
           <Route path="/about" element={<About />} />
-          <Route path="/care-guide" element={<CareGuide />} />
-          <Route path="/shipping" element={<ShippingFAQ />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/product/:code" element={<ProductDetail />} />
           <Route path="/privacy" element={<Privacy />} />

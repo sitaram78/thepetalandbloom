@@ -32,16 +32,10 @@ export const SITE_ASSET_KEYS = {
   // Contact Page
   CONTACT_HERO: 'contact_page_hero',
 
-  // Care Guide
-  CARE_GUIDE_HERO: 'care_guide_hero',
-  CARE_GUIDE_BG: 'care_guide_bg',
-
   // Other Pages
   CUSTOM_BUILDER_HERO: 'custom_builder_hero',
   CUSTOM_ORDERS_HERO: 'custom_orders_hero',
   GIFT_FINDER_HERO: 'home_gift_finder',
-  SHIPPING_FAQ_HERO: 'shipping_faq_hero',
-
   // Social
   INSTAGRAM_FEED: (index: number) => `instagram_feed_${index}`,
 };

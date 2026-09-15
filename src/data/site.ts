@@ -162,49 +162,6 @@ export const footerPolicyLinks = [
   { label: 'Refund / Cancellation', path: '/refund' },
 ];
 
-export const faqs = [
-  {
-    question: 'Are the flowers handmade?',
-    answer: 'Yes. Every flower, bouquet, and piece we create is handmade by our small team of crochet makers. Each petal is shaped stitch by stitch — no machine production, no mass manufacturing.',
-  },
-  {
-    question: 'How long does an order take?',
-    answer: 'Most individual flowers take 3–5 days to prepare. Bouquets take 4–7 days depending on size. Custom orders may take 5–10 days. We will always confirm your timeline when you place an order.',
-  },
-  {
-    question: 'Can I customise colours?',
-    answer: 'Absolutely. Most of our blooms are available in multiple colours, and many can be made in any colour you choose. Look for the "Customisable" label on a product, or start a custom bouquet and tell us what you have in mind.',
-  },
-  {
-    question: 'Can I create my own bouquet?',
-    answer: 'Yes — that is what our Custom Bouquet experience is for. You choose the flower types, the number of flowers, the colours, the wrapping, the ribbon, and the message. We handcraft it from scratch.',
-  },
-  {
-    question: 'Do you deliver across India?',
-    answer: 'Yes, we deliver pan-India. Orders are shipped via trusted courier services and typically arrive within 2–5 business days after preparation, depending on your location.',
-  },
-  {
-    question: 'How much is shipping?',
-    answer: 'Orders below ₹799 have a ₹69 shipping fee. Orders between ₹799 and ₹1,199 have a ₹49 shipping fee. Orders above ₹1,200 ship free.',
-  },
-  {
-    question: 'Can I add a personalised message?',
-    answer: 'Yes. You can add a personalised message card to any order for ₹39. We will handwrite your message and tuck it inside the wrapping.',
-  },
-  {
-    question: 'Can I order in bulk?',
-    answer: 'Yes. We take bulk and corporate orders for events, weddings, and return gifts. Please contact us on WhatsApp or through the Contact page with your requirements and timeline.',
-  },
-  {
-    question: 'Do you accept urgent orders?',
-    answer: 'We do our best to accommodate urgent requests. Since every piece is handmade, we cannot guarantee same-day or next-day delivery, but we will always try. Please message us on WhatsApp with your deadline.',
-  },
-  {
-    question: 'How should crochet flowers be cared for?',
-    answer: 'Keep them away from water and excessive dust. Avoid prolonged direct sunlight. Store carefully when not displayed. Use gentle cleaning methods — a soft brush or a light dust — and do not pull loose threads. Our Care Guide page has full details.',
-  },
-];
-
 export const bouquetTiers = [
   { name: 'Little Bloom', flowers: '1 flower', price: 499, code: 'TPB-BQ-001' },
   { name: 'Bloom Duo', flowers: '2 flowers', price: 699, code: 'TPB-BQ-002' },

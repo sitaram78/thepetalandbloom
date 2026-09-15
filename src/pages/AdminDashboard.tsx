@@ -71,22 +71,22 @@ export default function AdminDashboard() {
           </Reveal>
 
           <Reveal delay={100}>
-            <div className="flex items-center gap-4">
+            <div className="grid grid-cols-1 sm:flex sm:flex-wrap items-stretch sm:items-center gap-3 w-full md:w-auto">
               <Link
                 to="/admin/assets"
-                className="btn-secondary px-6 py-3 flex items-center justify-center gap-2 text-sm shadow-soft"
+                className="btn-secondary w-full sm:w-auto px-6 py-3 flex items-center justify-center gap-2 text-sm shadow-soft"
               >
                 <Palette size={18} /> Studio Visuals
               </Link>
               <Link
                 to="/admin/navigation"
-                className="btn-secondary px-6 py-3 flex items-center justify-center gap-2 text-sm shadow-soft"
+                className="btn-secondary w-full sm:w-auto px-6 py-3 flex items-center justify-center gap-2 text-sm shadow-soft"
               >
                 <GripVertical size={18} /> Navigation
               </Link>
               <Link
                 to="/admin/editor"
-                className="btn-primary px-6 py-3 flex items-center justify-center gap-2 text-sm shadow-soft"
+                className="btn-primary w-full sm:w-auto px-6 py-3 flex items-center justify-center gap-2 text-sm shadow-soft"
               >
                 <Plus size={18} /> Create New Piece
               </Link>

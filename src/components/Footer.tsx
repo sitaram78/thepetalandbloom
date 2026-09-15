@@ -8,7 +8,7 @@ export default function Footer() {
   const { navItems } = useNavigation();
   const topLevelNav = navItems.filter(item => !item.parent_id).sort((a, b) => a.order - b.order);
 
-  const infoPaths = ['/care-guide', '/shipping', '/contact', '/custom'];
+  const infoPaths = ['/contact', '/custom'];
   const infoNav = navItems
     .filter(item => infoPaths.includes(item.path || ''))
     .sort((a, b) => a.order - b.order);

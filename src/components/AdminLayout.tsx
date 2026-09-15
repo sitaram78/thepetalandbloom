@@ -18,7 +18,7 @@ import { supabase } from '@/lib/supabaseClient';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
-  activePage: 'dashboard' | 'editor' | 'migrate' | 'settings' | 'navigation' | 'assets';
+  activePage: 'dashboard' | 'editor' | 'settings' | 'navigation' | 'assets';
 }
 
 export default function AdminLayout({ children, activePage }: AdminLayoutProps) {
@@ -51,7 +51,8 @@ export default function AdminLayout({ children, activePage }: AdminLayoutProps) 
         </div>
         <button
           onClick={toggleMobileMenu}
-          className="p-2 hover:bg-white/10 rounded-md transition-colors"
+          className="w-10 h-10 flex items-center justify-center rounded-md bg-rose text-ink hover:bg-rose-deep hover:text-white transition-colors"
+          aria-label={isMobileMenuOpen ? 'Close admin menu' : 'Open admin menu'}
         >
           {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
@@ -112,19 +113,6 @@ export default function AdminLayout({ children, activePage }: AdminLayoutProps) 
           >
             <Plus size={18} />
             {!isCollapsed && <span className="text-sm">Add New Piece</span>}
-          </Link>
-          <Link
-            to="/admin/migrate"
-            onClick={() => setIsMobileMenuOpen(false)}
-            className={`flex items-center gap-3 px-4 py-3 rounded-sm transition-all duration-300 ${
-              activePage === 'migrate'
-                ? 'bg-white/20 text-white font-medium shadow-inner'
-                : 'hover:bg-white/10 text-white/60 hover:text-white'
-            } ${isCollapsed ? 'justify-center px-2' : ''}`}
-            title="Migration Tool"
-          >
-            <Package size={18} />
-            {!isCollapsed && <span className="text-sm">Migration Tool</span>}
           </Link>
           <Link
             to="/admin/settings"

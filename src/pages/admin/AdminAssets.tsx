@@ -44,9 +44,6 @@ const FIXED_ASSET_GROUPS = [
     label: 'Contact & Info',
     keys: [
       { key: SITE_ASSET_KEYS.CONTACT_HERO, label: 'Contact Hero', desc: 'Main visual for Contact page' },
-      { key: SITE_ASSET_KEYS.CARE_GUIDE_HERO, label: 'Care Guide Hero', desc: 'Main visual for Care Guide' },
-      { key: SITE_ASSET_KEYS.CARE_GUIDE_BG, label: 'Care Guide Background', desc: 'Subtle background for care instructions' },
-      { key: SITE_ASSET_KEYS.SHIPPING_FAQ_HERO, label: 'Shipping FAQ Hero', desc: 'Main visual for Shipping page' },
     ]
   },
   {
