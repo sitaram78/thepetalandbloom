@@ -20,6 +20,7 @@ The project is a Vite-powered React application using TypeScript and Tailwind CS
     - `QuickViewContext`: Controls the product quick-view modal.
     - `ProductContext`: Manages product catalog and lookup logic.
     - `SiteAssetsContext`: Manages dynamic site-wide background images and brand assets via Supabase Storage.
+    - `NavigationContext`: Manages the dynamic, hierarchical menu structure fetched from Supabase.
 - **Routing**: Single Page Application (SPA) architecture using `react-router-dom`.
 
 ### Component Hierarchy
@@ -38,7 +39,7 @@ The project implements a "Sophisticated Minimalist" luxury experience:
 
 ## Current Roadmap (Studio Evolution)
 - [x] **Stability**: Fixing routing, product rendering, and asset paths.
-- [x] **Dynamic Infrastructure**: Moving nav/categories to Supabase.
+- [ ] **Dynamic Infrastructure**: Completing the hierarchical navigation system (Infrastructure done; Navbar and Admin Manager pending).
 - [x] **Visual Overhaul**: Implementing the "High-End Atelier" minimalist design.
 - [x] **Asset Management**: Implementing dynamic site background photos via Supabase Storage and Admin Panel.
 - [x] **Performance**: Implementing hybrid caching for products and assets to reduce API latency.

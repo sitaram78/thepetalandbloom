@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Search, ShoppingBag, MessageCircle, Menu, X, XCircle, Heart } from 'lucide-react';
+import { Search, ShoppingBag, MessageCircle, Menu, X, XCircle, Heart, ChevronDown } from 'lucide-react';
 import { brandInfo } from '@/data/site';
 import { formatPrice } from '@/data/products';
 import { useCart } from '@/context/CartContext';
@@ -8,10 +8,9 @@ import { useWishlist } from '@/context/WishlistContext';
 import { useProducts } from '@/context/ProductContext';
 import { buildWhatsAppLink, generalEnquiryMessage } from '@/utils/whatsapp';
 import { trackEvent } from '@/utils/analytics';
-import { supabase } from '@/lib/supabaseClient';
-import { getCache, setCache } from '@/utils/cache';
 import { useClickOutside } from '@/hooks/useClickOutside';
 import { filterProducts } from '@/utils/productSearch';
+import { useNavigation, NavItem } from '@/context/NavigationContext';
 
 
 export default function Navbar() {
@@ -19,37 +18,26 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [navLinks, setNavLinks] = useState<{ label: string; path: string }[]>([]);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
+
+  const { navItems, loading: navLoading } = useNavigation();
   const location = useLocation();
   const navigate = useNavigate();
   const { totalItems, openCart } = useCart();
   const { count: wishlistCount } = useWishlist();
   const { products } = useProducts();
   const searchRef = useRef<HTMLInputElement>(null);
-  const searchContainerRef = useClickOutside(() => setSearchOpen(false));
+  const searchContainerRef = useClickOutside<HTMLDivElement>(() => setSearchOpen(false));
 
-  useEffect(() => {
-    async function fetchNav() {
-      // 1. Try to get from cache first
-      const cached = getCache<{ label: string; path: string }[]>( 'nav_links_cache');
-      if (cached) {
-        setNavLinks(cached);
-        return;
-      }
+  const topLevelNav = useMemo(() => {
+    const filtered = navItems.filter(item => !item.parent_id).sort((a, b) => a.order - b.order);
+    console.log('Navbar topLevelNav:', filtered);
+    return filtered;
+  }, [navItems]);
 
-      const { data, error } = await supabase
-        .from('navigation_links')
-        .select('label, path')
-        .eq('is_active', true)
-        .order('display_order', { ascending: true });
-
-      if (!error && data) {
-        setNavLinks(data);
-        setCache('nav_links_cache', data);
-      }
-    }
-    fetchNav();
-  }, []);
+  const getChildren = (parentId: string) =>
+    navItems.filter(item => item.parent_id === parentId).sort((a, b) => a.order - b.order);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -120,16 +108,46 @@ export default function Navbar() {
 
           {/* Desktop nav */}
           <div className="hidden lg:flex items-center gap-7">
-            {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={`text-sm font-medium tracking-wide transition-colors duration-300 link-underline ${
-                  isActive(link.path) ? 'text-rose-deep' : 'text-ink-light hover:text-rose'
-                }`}
+            {topLevelNav.map((item) => (
+              <div
+                key={item.id}
+                className="relative group"
+                onMouseEnter={() => item.type === 'dropdown' && setOpenDropdown(item.id)}
+                onMouseLeave={() => setOpenDropdown(null)}
               >
-                {link.label}
-              </Link>
+                <div className="flex items-center gap-1">
+                  <Link
+                    to={item.path || '#'}
+                    className={`text-sm font-medium tracking-wide transition-colors duration-300 link-underline ${
+                      isActive(item.path || '') ? 'text-rose-deep' : 'text-ink-light hover:text-rose'
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                  {item.type === 'dropdown' && <ChevronDown size={14} className="text-ink-light group-hover:text-rose transition-colors" />}
+                </div>
+
+                {/* Mega Menu Dropdown */}
+                {item.type === 'dropdown' && openDropdown === item.id && (
+                  <div className="absolute top-full left-0 w-64 glass-panel shadow-soft py-4 px-2 z-50 animate-fade-in rounded-sm">
+                    <div className="flex flex-col gap-1">
+                      {getChildren(item.id).map((child) => (
+                        <Link
+                          key={child.id}
+                          to={child.path || '#'}
+                          className={`px-4 py-2 text-sm transition-colors duration-200 rounded-sm ${
+                            isActive(child.path || '')
+                              ? 'bg-rose/10 text-rose-deep'
+                              : 'text-ink-light hover:bg-canvas/50 hover:text-rose'
+                          }`}
+                        >
+                          {child.label}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             ))}
           </div>
 
@@ -295,25 +313,60 @@ export default function Navbar() {
               </button>
             </div>
             <div className="flex-1 overflow-y-auto py-4">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  className={`block px-5 py-3.5 text-base font-medium transition-colors duration-200 ${
-                    isActive(link.path)
-                      ? 'text-rose-deep bg-rose/10'
-                      : 'text-ink-light hover:text-bark hover:bg-canvas/50'
-                  }`}
-                >
-                  {link.label}
-                </Link>
+              {topLevelNav.map((item) => (
+                <div key={item.id} className="flex flex-col">
+                  <div
+                    className={`flex items-center justify-between px-5 py-3.5 text-base font-medium transition-colors duration-200 cursor-pointer ${
+                      isActive(item.path || '')
+                        ? 'text-rose-deep bg-rose/10'
+                        : 'text-ink-light hover:text-bark hover:bg-canvas/50'
+                    }`}
+                    onClick={() => {
+                      if (item.type === 'dropdown') {
+                        setMobileExpanded(mobileExpanded === item.id ? null : item.id);
+                      } else {
+                        navigate(item.path || '/');
+                        setMobileOpen(false);
+                      }
+                    }}
+                  >
+                    <span>{item.label}</span>
+                    {item.type === 'dropdown' && (
+                      <ChevronDown
+                        size={18}
+                        className={`transition-transform duration-300 ${mobileExpanded === item.id ? 'rotate-180' : ''}`}
+                      />
+                    )}
+                  </div>
+                  {item.type === 'dropdown' && mobileExpanded === item.id && (
+                    <div className="bg-canvas/30 py-2">
+                      {getChildren(item.id).map((child) => (
+                        <Link
+                          key={child.id}
+                          to={child.path || '#'}
+                          className={`block px-10 py-3 text-sm font-medium transition-colors duration-200 ${
+                            isActive(child.path || '')
+                              ? 'text-rose-deep'
+                              : 'text-ink-light hover:text-bark'
+                          }`}
+                          onClick={() => setMobileOpen(false)}
+                        >
+                          {child.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
               ))}
               <div className="border-t border-canvas-line mt-2 pt-2">
-                <Link to="/decor" className="block px-5 py-3.5 text-base font-medium text-ink-light hover:text-bark hover:bg-canvas/50">Home Décor</Link>
-                <Link to="/gift-boxes" className="block px-5 py-3.5 text-base font-medium text-ink-light hover:text-bark hover:bg-canvas/50">Gift Boxes</Link>
-                <Link to="/care-guide" className="block px-5 py-3.5 text-base font-medium text-ink-light hover:text-bark hover:bg-canvas/50">Care Guide</Link>
-                <Link to="/shipping" className="block px-5 py-3.5 text-base font-medium text-ink-light hover:text-bark hover:bg-canvas/50">Shipping &amp; FAQ</Link>
-                <Link to="/contact" className="block px-5 py-3.5 text-base font-medium text-ink-light hover:text-bark hover:bg-canvas/50">Contact</Link>
+                <a
+                  href={buildWhatsAppLink(generalEnquiryMessage())}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block px-5 py-3.5 text-base font-medium text-ink-light hover:text-bark hover:bg-canvas/50"
+                >
+                  Custom Enquiry
+                </a>
               </div>
             </div>
             <div className="p-5 border-t border-canvas-line">

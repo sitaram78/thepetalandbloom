@@ -80,7 +80,7 @@ function ProductPreview({ product }: { product: ProductForm }) {
 export default function AdminEditor() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { loading: contextLoading } = useProducts();
+  const { loading: contextLoading, refreshProducts } = useProducts();
 
   const codeParam = searchParams.get('code');
   const isEditMode = !!codeParam;
@@ -90,6 +90,8 @@ export default function AdminEditor() {
   const [isSaved, setIsSaved] = useState(false);
   const [error, setError] = useState('');
   const [uploading, setUploading] = useState<string | null>(null);
+  const [categories, setCategories] = useState<{ name: string; slug: string }[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
 
   const [form, setForm] = useState<ProductForm>({
     name: '',
@@ -109,6 +111,27 @@ export default function AdminEditor() {
     preparationDays: '3-5 days',
     bouquetSize: '',
   });
+
+  useEffect(() => {
+    async function fetchCategories() {
+      setCategoriesLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('categories')
+          .select('name, slug')
+          .order('display_order', { ascending: true });
+
+        if (!error && data) {
+          setCategories(data);
+        }
+      } catch (err) {
+        console.error('Error fetching categories:', err);
+      } finally {
+        setCategoriesLoading(false);
+      }
+    }
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     if (isEditMode && codeParam) {
@@ -226,16 +249,34 @@ export default function AdminEditor() {
       };
 
       if (isEditMode) {
-        const { error: updateError } = await supabase
+        const { error: updateError, data: updateData } = await supabase
           .from('products')
           .update(payload)
-          .eq('code', codeParam);
-        if (updateError) throw updateError;
+          .eq('code', codeParam)
+          .select();
+        if (updateError) {
+          console.error('Supabase Update Error:', updateError);
+          throw updateError;
+        }
+        if (!updateData || updateData.length === 0) {
+          console.warn('Update request sent, but 0 rows were changed. Check RLS policies.');
+          throw new Error('Product was not updated. Check database permissions.');
+        }
+        await refreshProducts();
       } else {
-        const { error: insertError } = await supabase
+        const { error: insertError, data: insertData } = await supabase
           .from('products')
-          .insert([payload]);
-        if (insertError) throw insertError;
+          .insert([payload])
+          .select();
+        if (insertError) {
+          console.error('Supabase Insert Error:', insertError);
+          throw insertError;
+        }
+        if (!insertData || insertData.length === 0) {
+          console.warn('Insert request sent, but no data returned. Check RLS policies.');
+          throw new Error('Product was not saved. Check database permissions.');
+        }
+        await refreshProducts();
       }
 
       setIsSaved(true);
@@ -325,12 +366,15 @@ export default function AdminEditor() {
                       onChange={(e) => handleInputChange('category', e.target.value)}
                       className="input-field appearance-none"
                     >
-                      <option value="flowers">Flowers</option>
-                      <option value="bouquets">Bouquets</option>
-                      <option value="gifts">Gifts</option>
-                      <option value="bags">Bags</option>
-                      <option value="decor">Home Décor</option>
-                      <option value="giftboxes">Gift Boxes</option>
+                      {categoriesLoading ? (
+                        <option value="">Loading categories...</option>
+                      ) : categories.length > 0 ? (
+                        categories.map(cat => (
+                          <option key={cat.slug} value={cat.slug}>{cat.name}</option>
+                        ))
+                      ) : (
+                        <option value="">No categories found</option>
+                      )}
                     </select>
                   </div>
                   <div className="space-y-2">

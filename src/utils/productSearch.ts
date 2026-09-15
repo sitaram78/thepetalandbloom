@@ -7,15 +7,24 @@ export interface SearchCriteria {
   occasion?: string;
   budget?: string;
   customOnly?: boolean;
+  validCategories?: string[];
 }
 
 export function filterProducts(products: Product[], criteria: SearchCriteria) {
-  const { query, category, occasion, budget, customOnly } = criteria;
+  const { query, category, occasion, budget, customOnly, validCategories } = criteria;
 
   return products.filter((p) => {
     // Category filter
-    if (category && category !== 'all' && p.category !== category) {
-      return false;
+    if (category && category !== 'all') {
+      if (p.category?.toLowerCase().trim() !== category.toLowerCase().trim()) {
+        return false;
+      }
+    } else if (category === 'all' && validCategories && validCategories.length > 0) {
+      // If "All" is selected but we have a list of valid categories,
+      // only show products that belong to one of those categories.
+      if (!validCategories.includes(p.category?.toLowerCase().trim() || '')) {
+        return false;
+      }
     }
 
     // Occasion filter

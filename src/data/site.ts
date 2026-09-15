@@ -214,16 +214,6 @@ export const heroImages = {
   giftBox: 'https://images.pexels.com/photos/10482144/pexels-photo-10482144.jpeg?auto=compress&cs=tinysrgb&h=800&w=600',
 };
 
-export const navLinks = [
-  { label: 'Shop', path: '/shop' },
-  { label: 'Flowers', path: '/flowers' },
-  { label: 'Bouquets', path: '/bouquets' },
-  { label: 'Gifts', path: '/gifts' },
-  { label: 'Bags', path: '/bags' },
-  { label: 'Custom', path: '/custom' },
-  { label: 'About', path: '/about' },
-];
-
 export const brandInfo = {
   name: 'The Petal & Bloom',
   tagline: 'Handmade Crochet Gifts & Blooms',

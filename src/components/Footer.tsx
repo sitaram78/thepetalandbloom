@@ -1,9 +1,13 @@
 import { Link } from 'react-router-dom';
 import { Instagram, MessageCircle, Mail, Heart } from 'lucide-react';
-import { brandInfo, navLinks, footerPolicyLinks } from '@/data/site';
+import { brandInfo, footerPolicyLinks } from '@/data/site';
 import { buildWhatsAppLink, generalEnquiryMessage } from '@/utils/whatsapp';
+import { useNavigation } from '@/context/NavigationContext';
 
 export default function Footer() {
+  const { navItems } = useNavigation();
+  const topLevelNav = navItems.filter(item => !item.parent_id).sort((a, b) => a.order - b.order);
+
   return (
     <footer className="bg-bark-dark text-linen mt-10">
       <div className="container-lux py-10 lg:py-16">
@@ -27,10 +31,10 @@ export default function Footer() {
           <div className="space-y-4">
             <h4 className="text-[10px] uppercase tracking-[0.2em] text-parchment-50/40 mb-4 font-semibold">Explore</h4>
             <ul className="space-y-2">
-              {navLinks.map((link) => (
-                <li key={link.path}>
+              {topLevelNav.map((link) => (
+                <li key={link.id}>
                   <Link
-                    to={link.path}
+                    to={link.path || '#'}
                     className="text-sm text-linen/60 hover:text-rose transition-colors duration-300"
                   >
                     {link.label}

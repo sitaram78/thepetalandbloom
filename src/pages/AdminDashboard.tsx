@@ -8,7 +8,8 @@ import {
   Palette,
   Star,
   Package,
-  ArrowRight
+  ArrowRight,
+  GripVertical
 } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 import { useProducts } from '@/context/ProductContext';
@@ -16,7 +17,7 @@ import Reveal from '@/components/Reveal';
 import AdminLayout from '@/components/AdminLayout';
 
 export default function AdminDashboard() {
-  const { products, loading } = useProducts();
+  const { products, loading, refreshProducts } = useProducts();
   const [searchQuery, setSearchQuery] = useState('');
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
@@ -40,7 +41,7 @@ export default function AdminDashboard() {
         .eq('code', code);
 
       if (error) throw error;
-      window.location.reload();
+      await refreshProducts();
     } catch (err: any) {
       alert(`Error deleting product: ${err.message}`);
     } finally {
@@ -76,6 +77,12 @@ export default function AdminDashboard() {
                 className="btn-secondary px-6 py-3 flex items-center justify-center gap-2 text-sm shadow-soft"
               >
                 <Palette size={18} /> Studio Visuals
+              </Link>
+              <Link
+                to="/admin/navigation"
+                className="btn-secondary px-6 py-3 flex items-center justify-center gap-2 text-sm shadow-soft"
+              >
+                <GripVertical size={18} /> Navigation
               </Link>
               <Link
                 to="/admin/editor"

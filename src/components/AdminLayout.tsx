@@ -10,13 +10,15 @@ import {
   ChevronRight,
   Menu,
   X,
-  SlidersHorizontal
+  SlidersHorizontal,
+  GripVertical,
+  Palette
 } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
-  activePage: 'dashboard' | 'editor' | 'migrate' | 'settings';
+  activePage: 'dashboard' | 'editor' | 'migrate' | 'settings' | 'navigation' | 'assets';
 }
 
 export default function AdminLayout({ children, activePage }: AdminLayoutProps) {
@@ -132,10 +134,36 @@ export default function AdminLayout({ children, activePage }: AdminLayoutProps) 
                 ? 'bg-white/20 text-white font-medium shadow-inner'
                 : 'hover:bg-white/10 text-white/60 hover:text-white'
             } ${isCollapsed ? 'justify-center px-2' : ''}`}
-            title="Studio Settings"
+            title="Category Manager"
           >
             <SlidersHorizontal size={18} />
-            {!isCollapsed && <span className="text-sm">Studio Settings</span>}
+            {!isCollapsed && <span className="text-sm">Category Manager</span>}
+          </Link>
+          <Link
+            to="/admin/navigation"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className={`flex items-center gap-3 px-4 py-3 rounded-sm transition-all duration-300 ${
+              activePage === 'navigation'
+                ? 'bg-white/20 text-white font-medium shadow-inner'
+                : 'hover:bg-white/10 text-white/60 hover:text-white'
+            } ${isCollapsed ? 'justify-center px-2' : ''}`}
+            title="Navigation Manager"
+          >
+            <GripVertical size={18} />
+            {!isCollapsed && <span className="text-sm">Navigation</span>}
+          </Link>
+          <Link
+            to="/admin/assets"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className={`flex items-center gap-3 px-4 py-3 rounded-sm transition-all duration-300 ${
+              activePage === 'assets'
+                ? 'bg-white/20 text-white font-medium shadow-inner'
+                : 'hover:bg-white/10 text-white/60 hover:text-white'
+            } ${isCollapsed ? 'justify-center px-2' : ''}`}
+            title="Studio Visuals"
+          >
+            <Palette size={18} />
+            {!isCollapsed && <span className="text-sm">Studio Visuals</span>}
           </Link>
         </nav>
 

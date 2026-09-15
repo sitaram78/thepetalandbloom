@@ -125,12 +125,16 @@ export default function Home() {
               Hand-sculpted crochet blooms and thoughtful gifts, created slowly to be given meaningfully.
             </p>
             <div className="mt-16 flex flex-col sm:flex-row items-center justify-center gap-6 animate-fade-up" style={{ animationDelay: '0.6s' }}>
-              <AtelierButton variant="primary" className="text-lg px-12 py-5">
-                Explore the Studio <ArrowRight size={20} className="ml-2" />
-              </AtelierButton>
-              <AtelierButton variant="ghost" className="text-lg px-12 py-5">
-                Co-create a Bouquet
-              </AtelierButton>
+              <Link to="/shop">
+                <AtelierButton variant="primary" className="text-lg px-12 py-5">
+                  Explore the Studio <ArrowRight size={20} className="ml-2" />
+                </AtelierButton>
+              </Link>
+              <Link to="/custom-bouquet">
+                <AtelierButton variant="ghost" className="text-lg px-12 py-5">
+                  Co-create a Bouquet
+                </AtelierButton>
+              </Link>
             </div>
           </Reveal>
         </div>
@@ -392,12 +396,16 @@ export default function Home() {
               Ready to give a gift<br />that stays?
             </h2>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-8">
-              <AtelierButton variant="primary" className="text-lg px-16 py-6">
-                Shop the Collections <ArrowRight size={22} className="ml-2" />
-              </AtelierButton>
-              <AtelierButton variant="ghost" className="text-lg px-16 py-6">
-                Design a Custom Piece
-              </AtelierButton>
+              <Link to="/shop">
+                <AtelierButton variant="primary" className="text-lg px-16 py-6">
+                  Shop the Collections <ArrowRight size={22} className="ml-2" />
+                </AtelierButton>
+              </Link>
+              <Link to="/custom-bouquet">
+                <AtelierButton variant="ghost" className="text-lg px-16 py-6">
+                  Design a Custom Piece
+                </AtelierButton>
+              </Link>
             </div>
           </Reveal>
         </div>

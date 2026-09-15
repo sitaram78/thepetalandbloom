@@ -26,24 +26,23 @@ const sortOptions = [
   { label: 'Price: High to Low', value: 'price-desc' },
 ];
 
-const CATEGORY_COLORS = [
-  'linear-gradient(135deg, #A8465A 0%, #8A3A4B 100%)', // All - Rose
-  'linear-gradient(135deg, #8C9B7F 0%, #6B7B61 100%)', // Flowers - Sage
-  'linear-gradient(135deg, #CBB89A 0%, #A8967B 100%)', // Bouquets - Canvas/Gold
-  'linear-gradient(135deg, #4A4238 0%, #2A241C 100%)', // Gifts - Bark
-  'linear-gradient(135deg, #9E7B9E 0%, #7D5C7D 100%)', // Bags - Purple/Rose
-  'linear-gradient(135deg, #8C9B7F 0%, #6B7B61 100%)', // Home decor - Sage
-  'linear-gradient(135deg, #A8465A 0%, #8A3A4B 100%)', // Gift boxes - Rose
-];
-
-const DEFAULT_CATEGORIES = [
-  { label: 'Flowers', value: 'flowers' },
-  { label: 'Bouquets', value: 'bouquets' },
-  { label: 'Gifts', value: 'gifts' },
-  { label: 'Bags', value: 'bags' },
-  { label: 'Home Décor', value: 'decor' },
-  { label: 'Gift Boxes', value: 'giftboxes' },
-];
+// Dynamic color generator based on category slug
+const getCategoryColor = (slug: string) => {
+  const colors = [
+    'linear-gradient(135deg, #A8465A 0%, #8A3A4B 100%)', // Rose
+    'linear-gradient(135deg, #8C9B7F 0%, #6B7B61 100%)', // Sage
+    'linear-gradient(135deg, #CBB89A 0%, #A8967B 100%)', // Canvas/Gold
+    'linear-gradient(135deg, #4A4238 0%, #2A241C 100%)', // Bark
+    'linear-gradient(135deg, #9E7B9E 0%, #7D5C7D 100%)', // Purple/Rose
+    'linear-gradient(135deg, #D4A373 0%, #B08968 100%)', // Tan
+    'linear-gradient(135deg, #B7B7A4 0%, #6B705C 100%)', // Olive
+  ];
+  let hash = 0;
+  for (let i = 0; i < slug.length; i++) {
+    hash = slug.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return colors[Math.abs(hash) % colors.length];
+};
 
 const BLOB_SHAPES = [
   '60% 40% 30% 70% / 60% 30% 70% 40%',
@@ -55,44 +54,50 @@ const BLOB_SHAPES = [
   '40% 70% 60% 30% / 60% 40% 50% 50%',
 ];
 
-
-
 export default function ShopPage() {
   const { products, loading } = useProducts();
   const [searchParams, setSearchParams] = useSearchParams();
   const occasionFilter = searchParams.get('occasion') || '';
   const budgetFilter = searchParams.get('budget') || '';
   const searchQuery = searchParams.get('search') || '';
-  const [category, setCategory] = useState<ProductCategory | 'all'>('all');
+  const category = searchParams.get('category') || 'all';
+
   const [categories, setCategories] = useState<{ label: string; value: string; image_url?: string }[]>([]);
   const [sort, setSort] = useState('featured');
   const [customOnly, setCustomOnly] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
+  const handleCategoryChange = (val: ProductCategory | 'all') => {
+    const params = new URLSearchParams(searchParams);
+    if (val === 'all') {
+      params.delete('category');
+    } else {
+      params.set('category', val);
+    }
+    setSearchParams(params);
+  };
 
   useEffect(() => {
     async function fetchCategories() {
-      const cached = getCache<{ label: string; value: string }[]>('categories_cache');
-      if (cached) {
-        setCategories(cached);
-        return;
-      }
+      try {
+        const { data, error } = await supabase
+          .from('categories')
+          .select('name, slug')
+          .order('display_order', { ascending: true });
 
-      const { data, error } = await supabase
-        .from('categories')
-        .select('name, slug, image_url')
-        .order('display_order', { ascending: true });
-
-      if (!error && data && data.length > 0) {
-        const mapped = data.map(c => ({
-          label: c.name,
-          value: c.slug,
-          image_url: c.image_url
-        }));
-        setCategories(mapped);
-        setCache('categories_cache', mapped);
-      } else {
-        setCategories(DEFAULT_CATEGORIES);
+        if (!error && data && data.length > 0) {
+          const mapped = data.map(c => ({
+            label: c.name,
+            value: c.slug,
+            image_url: c.image_url
+          }));
+          setCategories(mapped);
+        } else {
+          setCategories([]);
+        }
+      } catch (err) {
+        console.error('Error fetching categories:', err);
+        setCategories([]);
       }
     }
     fetchCategories();
@@ -100,7 +105,9 @@ export default function ShopPage() {
 
   useEffect(() => {
     if (occasionFilter || budgetFilter || searchQuery) {
-      setCategory('all');
+      const params = new URLSearchParams(searchParams);
+      params.delete('category');
+      setSearchParams(params);
     }
     if (searchQuery) {
       trackEvent('search', { query: searchQuery });
@@ -120,6 +127,7 @@ export default function ShopPage() {
       category,
       occasion: occasionFilter,
       customOnly,
+      validCategories: categories.map(c => c.value),
     });
 
     if (activeBudget) {
@@ -137,19 +145,22 @@ export default function ShopPage() {
     }
 
     return result;
-  }, [products, category, occasionFilter, activeBudget, customOnly, searchQuery, sort]);
+  }, [products, category, occasionFilter, activeBudget, customOnly, searchQuery, sort, categories]);
 
   const occasionName = occasions.find((o) => o.filter === occasionFilter)?.name;
   const hasActiveFilter = occasionFilter || budgetFilter || searchQuery || customOnly || category !== 'all';
 
   const clearAllFilters = () => {
     setSearchParams({});
-    setCategory('all');
     setCustomOnly(false);
     setSort('featured');
   };
 
   const hasNoResults = filtered && filtered.length === 0 && searchQuery;
+
+  // Dynamic Hero Image Logic
+  const activeCategoryData = categories.find(c => c.value === category);
+  const heroImage = activeCategoryData?.image_url || heroImages.secondary;
 
   if (loading) {
     return (
@@ -179,7 +190,7 @@ export default function ShopPage() {
         <div className="container-lux grid grid-cols-1 lg:grid-cols-12 gap-12 items-end">
           <div className="lg:col-span-7">
             <span className="font-serif italic text-sm text-rose mb-3 block uppercase tracking-widest">
-              {hasNoResults ? 'Search' : occasionName ? `${occasionName} collection` : 'Shop all'}
+              {hasNoResults ? 'Search' : occasionName ? `${occasionName} collection` : category !== 'all' ? `${activeCategoryData?.label || category} collection` : 'Shop all'}
             </span>
             <h1 className="font-serif text-4xl sm:text-5xl lg:text-7xl text-bark leading-tight mb-6">
               {hasNoResults
@@ -188,6 +199,8 @@ export default function ShopPage() {
                 ? `Curated for ${occasionName}`
                 : searchQuery
                 ? `Search: "${searchQuery}"`
+                : category !== 'all'
+                ? `${activeCategoryData?.label || category} Collection`
                 : 'Every bloom, one studio table.'
               }
             </h1>
@@ -196,6 +209,8 @@ export default function ShopPage() {
                 ? `We couldn't find any pieces matching "${searchQuery}". Try a different keyword or explore our full studio.`
                 : occasionName
                 ? `Handmade crochet blooms and gifts specifically curated for ${occasionName.toLowerCase()}.`
+                : category !== 'all'
+                ? `Explore our curated selection of ${activeCategoryData?.label || category}s, handcrafted stitch by stitch.`
                 : 'Sixty-two pieces, each stitched to order — from single stems to full bouquets, gift boxes, and pieces you can shape yourself.'
               }
             </p>
@@ -203,10 +218,10 @@ export default function ShopPage() {
           <div className="lg:col-span-5">
             <div className="aspect-[16/9] rounded-atelier-img overflow-hidden shadow-soft">
               <img
-                src={heroImages.secondary}
+                src={heroImage}
                 alt="Studio Gallery"
                 loading="lazy"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover transition-opacity duration-500"
               />
             </div>
           </div>
@@ -219,13 +234,13 @@ export default function ShopPage() {
           <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
             {/* "All" Category */}
             <button
-              onClick={() => setCategory('all')}
+              onClick={() => handleCategoryChange('all')}
               className="flex-shrink-0 flex flex-col items-center gap-3 group w-24"
             >
               <div className={`w-20 h-20 transition-all duration-300 overflow-hidden ${category === 'all' ? 'scale-110 ring-2 ring-rose' : 'group-hover:scale-105'} relative shadow-sm`}
                    style={{
                      borderRadius: BLOB_SHAPES[0],
-                     background: CATEGORY_COLORS[0]
+                     background: getCategoryColor('all')
                    }}>
                 <div className="w-full h-full flex items-center justify-center text-white font-serif italic text-sm">All</div>
               </div>
@@ -235,13 +250,13 @@ export default function ShopPage() {
             {categories.map((cat, idx) => (
               <button
                 key={cat.value}
-                onClick={() => setCategory(cat.value as ProductCategory)}
+                onClick={() => handleCategoryChange(cat.value as ProductCategory)}
                 className="flex-shrink-0 flex flex-col items-center gap-3 group w-24"
               >
                 <div className={`w-20 h-20 transition-all duration-300 overflow-hidden ${category === cat.value ? 'scale-110 ring-2 ring-rose' : 'group-hover:scale-105'} relative shadow-sm`}
                      style={{
                        borderRadius: BLOB_SHAPES[(idx + 1) % BLOB_SHAPES.length],
-                       background: cat.image_url ? 'none' : CATEGORY_COLORS[(idx + 1) % CATEGORY_COLORS.length]
+                       background: cat.image_url ? 'none' : getCategoryColor(cat.value)
                      }}>
                   {cat.image_url ? (
                     <img src={cat.image_url} alt={cat.label} className="w-full h-full object-cover" />
@@ -267,7 +282,7 @@ export default function ShopPage() {
             <div className="flex flex-wrap justify-center lg:justify-start gap-3">
               <AtelierChip
                 active={category === 'all'}
-                onClick={() => setCategory('all')}
+                onClick={() => handleCategoryChange('all')}
               >
                 All Categories
               </AtelierChip>
@@ -275,14 +290,14 @@ export default function ShopPage() {
                 <AtelierChip
                   key={cat.value}
                   active={category === cat.value}
-                  onClick={() => setCategory(cat.value as ProductCategory)}
+                  onClick={() => handleCategoryChange(cat.value as ProductCategory)}
                 >
                   {cat.label}
                 </AtelierChip>
               ))}
             </div>
 
-            <div className="flex items-center gap-6">
+            <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
               <AtelierChip
                 variant="toggle"
                 active={customOnly}
