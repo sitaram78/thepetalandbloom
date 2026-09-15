@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { SlidersHorizontal, X, Search, ChevronDown, LayoutGrid, List } from 'lucide-react';
+import { SlidersHorizontal, X, Search, ChevronDown, LayoutGrid, List, Filter } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 import ProductGrid from '@/components/ProductGrid';
 import ProductList from '@/components/ProductList';
@@ -27,24 +27,6 @@ const sortOptions = [
   { label: 'Price: High to Low', value: 'price-desc' },
 ];
 
-// Dynamic color generator based on category slug
-const getCategoryColor = (slug: string) => {
-  const colors = [
-    'linear-gradient(135deg, #A8465A 0%, #8A3A4B 100%)', // Rose
-    'linear-gradient(135deg, #8C9B7F 0%, #6B7B61 100%)', // Sage
-    'linear-gradient(135deg, #CBB89A 0%, #A8967B 100%)', // Canvas/Gold
-    'linear-gradient(135deg, #4A4238 0%, #2A241C 100%)', // Bark
-    'linear-gradient(135deg, #9E7B9E 0%, #7D5C7D 100%)', // Purple/Rose
-    'linear-gradient(135deg, #D4A373 0%, #B08968 100%)', // Tan
-    'linear-gradient(135deg, #B7B7A4 0%, #6B705C 100%)', // Olive
-  ];
-  let hash = 0;
-  for (let i = 0; i < slug.length; i++) {
-    hash = slug.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  return colors[Math.abs(hash) % colors.length];
-};
-
 const BLOB_SHAPES = [
   '60% 40% 30% 70% / 60% 30% 70% 40%',
   '30% 60% 70% 40% / 50% 60% 30% 60%',
@@ -68,6 +50,7 @@ export default function ShopPage() {
   const [sort, setSort] = useState('featured');
   const [customOnly, setCustomOnly] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [isToolbarExpanded, setIsToolbarExpanded] = useState(false);
 
   const handleCategoryChange = (val: ProductCategory | 'all') => {
     const params = new URLSearchParams(searchParams);
@@ -160,14 +143,12 @@ export default function ShopPage() {
 
   const hasNoResults = filtered && filtered.length === 0 && searchQuery;
 
-  // Dynamic Hero Image Logic
   const activeCategoryData = categories.find(c => c.value === category);
 
   const getOccasionAssetKey = (filter: string) => {
     const occasion = occasions.find(o => o.filter === filter);
     if (!occasion) return null;
 
-    // Map the occasion filter to the home_occasion keys we defined
     const mapping: Record<string, string> = {
       'Birthday': SITE_ASSET_KEYS.HOME_OCCASION_BIRTHDAY,
       'Anniversary': SITE_ASSET_KEYS.HOME_OCCASION_ANNIVERSARY,
@@ -182,20 +163,26 @@ export default function ShopPage() {
   };
 
   const heroImage = useMemo(() => {
-    // Priority 1: Occasion
     if (occasionFilter) {
       const occasionKey = getOccasionAssetKey(occasionFilter);
       if (occasionKey) return getDynamicAsset(assets, occasionKey);
     }
 
-    // Priority 2: Category
     if (category !== 'all' && activeCategoryData) {
       return getDynamicAsset(assets, `cat_${activeCategoryData.value}_hero`);
     }
 
-    // Priority 3: Default Shop Hero
     return getDynamicAsset(assets, SITE_ASSET_KEYS.SHOP_HERO_DEFAULT);
   }, [assets, occasionFilter, category, activeCategoryData]);
+
+  const activeFilterCount = useMemo(() => {
+    let count = 0;
+    if (category !== 'all') count++;
+    if (occasionFilter) count++;
+    if (budgetFilter) count++;
+    if (customOnly) count++;
+    return count;
+  }, [category, occasionFilter, budgetFilter, customOnly]);
 
   if (productLoading || assetsLoading) {
     return (
@@ -220,7 +207,6 @@ export default function ShopPage() {
         canonicalPath="/shop"
       />
 
-      {/* Atelier Shop Header */}
       <section className="pt-16 pb-12 lg:pt-24 lg:pb-20">
         <div className="container-lux grid grid-cols-1 lg:grid-cols-12 gap-12 items-end">
           <div className="lg:col-span-7">
@@ -267,7 +253,6 @@ export default function ShopPage() {
       <section className="pb-12">
         <div className="container-lux">
           <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
-            {/* "All" Category */}
             <button
               onClick={() => handleCategoryChange('all')}
               className="flex-shrink-0 flex flex-col items-center gap-3 group w-24"
@@ -275,7 +260,7 @@ export default function ShopPage() {
               <div className={`w-20 h-20 transition-all duration-300 overflow-hidden ${category === 'all' ? 'scale-110 ring-2 ring-rose' : 'group-hover:scale-105'} relative shadow-sm`}
                    style={{
                      borderRadius: BLOB_SHAPES[0],
-                     background: getCategoryColor('all')
+                     background: '#4A4238'
                    }}>
                 <div className="w-full h-full flex items-center justify-center text-white font-serif italic text-sm">All</div>
               </div>
@@ -293,7 +278,7 @@ export default function ShopPage() {
                   <div className={`w-20 h-20 transition-all duration-300 overflow-hidden ${category === cat.value ? 'scale-110 ring-2 ring-rose' : 'group-hover:scale-105'} relative shadow-sm`}
                        style={{
                          borderRadius: BLOB_SHAPES[(idx + 1) % BLOB_SHAPES.length],
-                         background: catImage ? 'none' : getCategoryColor(cat.value)
+                         background: catImage ? 'none' : '#CBB89A'
                        }}>
                     {catImage ? (
                       <img src={catImage} alt={cat.label} className="w-full h-full object-cover" />
@@ -317,7 +302,9 @@ export default function ShopPage() {
       <div className="sticky top-16 z-30 bg-linen/90 backdrop-blur-md border-y border-canvas-line py-4">
         <div className="container-lux flex flex-col gap-6">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
-            <div className="flex flex-wrap justify-center lg:justify-start gap-3">
+
+            {/* Desktop Categories - Hidden on Mobile */}
+            <div className="hidden sm:flex flex-wrap justify-center lg:justify-start gap-3">
               <AtelierChip
                 active={category === 'all'}
                 onClick={() => handleCategoryChange('all')}
@@ -335,7 +322,34 @@ export default function ShopPage() {
               ))}
             </div>
 
-            <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
+            {/* Mobile Toolbar Header */}
+            <div className="flex sm:hidden items-center justify-between w-full gap-4">
+              <button
+                onClick={() => setIsToolbarExpanded(!isToolbarExpanded)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full border transition-all text-xs font-medium ${
+                  hasActiveFilter ? 'bg-rose text-white border-rose' : 'bg-white border-silk text-ink-light hover:border-rose'
+                }`}
+              >
+                <Filter size={14} />
+                {isToolbarExpanded ? 'Close Filters' : `Filters ${activeFilterCount > 0 && `(${activeFilterCount})`}`}
+              </button>
+
+              <div className="flex items-center gap-2 text-sm text-ink-light">
+                <select
+                  value={sort}
+                  onChange={(e) => setSort(e.target.value)}
+                  className="bg-transparent border-none focus:ring-0 cursor-pointer hover:text-bark transition-colors p-0 m-0 text-xs"
+                >
+                  {sortOptions.map((opt) => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
+                <ChevronDown size={14} />
+              </div>
+            </div>
+
+            {/* Desktop Controls */}
+            <div className="hidden sm:flex flex-wrap items-center justify-center gap-4 sm:gap-6">
               <AtelierChip
                 variant="toggle"
                 active={customOnly}
@@ -343,7 +357,6 @@ export default function ShopPage() {
               >
                 Customisable only
               </AtelierChip>
-
               <div className="flex items-center gap-2 text-sm text-ink-light">
                 <span className="font-medium">Sort:</span>
                 <select
@@ -357,7 +370,6 @@ export default function ShopPage() {
                 </select>
                 <ChevronDown size={14} />
               </div>
-
               <div className="flex gap-1">
                 <button
                   onClick={() => setViewMode('grid')}
@@ -375,8 +387,62 @@ export default function ShopPage() {
             </div>
           </div>
 
-          {/* Occasion scroll */}
-          <div className="flex items-center justify-start lg:justify-center gap-3 overflow-x-auto pb-2 scrollbar-hide px-6">
+          {/* Expandable Mobile Filters */}
+          {isToolbarExpanded && (
+            <div className="sm:hidden flex flex-col gap-6 animate-fade-in py-4 border-t border-silk">
+              <div className="flex flex-wrap justify-center gap-2">
+                <AtelierChip
+                  active={category === 'all'}
+                  onClick={() => handleCategoryChange('all')}
+                >
+                  All Categories
+                </AtelierChip>
+                {categories.map((cat) => (
+                  <AtelierChip
+                    key={cat.value}
+                    active={category === cat.value}
+                    onClick={() => handleCategoryChange(cat.value as ProductCategory)}
+                  >
+                    {cat.label}
+                  </AtelierChip>
+                ))}
+              </div>
+
+              <div className="flex flex-wrap justify-center gap-2">
+                {giftingOccasions.map((occ) => (
+                  <AtelierChip
+                    key={occ}
+                    variant="occasion"
+                    active={occasionFilter === occ}
+                    onClick={() => {
+                      const params = new URLSearchParams(searchParams);
+                      if (occasionFilter === occ) {
+                        params.delete('occasion');
+                      } else {
+                        params.set('occasion', occ);
+                      }
+                      setSearchParams(params);
+                    }}
+                  >
+                    {occ}
+                  </AtelierChip>
+                ))}
+              </div>
+
+              <div className="flex justify-center">
+                <AtelierChip
+                  variant="toggle"
+                  active={customOnly}
+                  onClick={() => setCustomOnly(!customOnly)}
+                >
+                  Customisable only
+                </AtelierChip>
+              </div>
+            </div>
+          )}
+
+          {/* Occasion scroll - Hidden on mobile */}
+          <div className="hidden sm:flex items-center justify-start lg:justify-center gap-3 overflow-x-auto pb-2 scrollbar-hide px-6">
             {giftingOccasions.map((occ) => (
               <AtelierChip
                 key={occ}
@@ -395,6 +461,22 @@ export default function ShopPage() {
                 {occ}
               </AtelierChip>
             ))}
+          </div>
+
+          {/* Mobile ViewMode buttons */}
+          <div className="flex sm:hidden justify-center gap-1 py-2">
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`p-2 rounded transition-colors ${viewMode === 'grid' ? 'bg-bark text-linen' : 'border border-canvas-line text-ink-light hover:bg-canvas'}`}
+            >
+              <LayoutGrid size={16} />
+            </button>
+            <button
+              onClick={() => setViewMode('list')}
+              className={`p-2 rounded transition-colors ${viewMode === 'list' ? 'bg-bark text-linen' : 'border border-canvas-line text-ink-light hover:bg-canvas'}`}
+            >
+              <List size={16} />
+            </button>
           </div>
         </div>
       </div>

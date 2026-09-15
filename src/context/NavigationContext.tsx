@@ -28,11 +28,9 @@ export function NavigationProvider({ children }: { children: React.ReactNode }) 
 
   const fetchNavigation = useCallback(async () => {
     setLoading(true);
-    console.log('Fetching navigation data...');
     try {
       const cached = getCache<NavItem[]>('navigation_cache');
       if (cached) {
-        console.log('Using cached navigation data:', cached);
         setNavItems(cached);
         setLoading(false);
         return;
@@ -45,7 +43,6 @@ export function NavigationProvider({ children }: { children: React.ReactNode }) 
 
       if (error) throw error;
       if (data) {
-        console.log('Fetched navigation data from Supabase:', data);
         setNavItems(data);
         setCache('navigation_cache', data);
       } else {

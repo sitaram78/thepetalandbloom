@@ -56,7 +56,6 @@ export default function AdminSettings() {
 
     setSaving(true);
     try {
-      console.log('Attempting to add category:', newCategory);
       const { data, error } = await supabase
         .from('categories')
         .insert([{
@@ -72,13 +71,10 @@ export default function AdminSettings() {
       }
 
       if (!data || data.length === 0) {
-        console.warn('Supabase returned success but no data was inserted. Check RLS policies.');
         notify('Category not saved. Please check database permissions.', { type: 'error' });
         setSaving(false);
         return;
       }
-
-      console.log('Category successfully saved:', data[0]);
       removeCache(CATEGORIES_CACHE);
       setNewCategory({ name: '', slug: '' });
       await fetchData();

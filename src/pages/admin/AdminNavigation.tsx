@@ -32,7 +32,6 @@ export default function AdminNavigation() {
 
   useEffect(() => {
     async function fetchCategories() {
-      console.log('Fetching categories for Navigation Manager...');
       const { data, error } = await supabase
         .from('categories')
         .select('name, slug')
@@ -41,7 +40,6 @@ export default function AdminNavigation() {
       if (error) {
         console.error('Error fetching categories in AdminNavigation:', error);
       } else if (data) {
-        console.log('Categories fetched successfully:', data);
         setCategories(data);
       }
     }

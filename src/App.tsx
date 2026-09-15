@@ -73,7 +73,6 @@ function AppContent() {
             <Route path="/admin/navigation" element={<AdminNavigation />} />
             <Route path="/admin/editor" element={<AdminEditor />} />
             <Route path="/admin/assets" element={<AdminAssets />} />
-            <Route path="/admin/migrate" element={<MigrationPage />} />
             <Route path="/admin/settings" element={<AdminSettings />} />
           </Route>
         </Routes>

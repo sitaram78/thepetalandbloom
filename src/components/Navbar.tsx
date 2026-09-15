@@ -35,7 +35,6 @@ export default function Navbar() {
 
   const topLevelNav = useMemo(() => {
     const filtered = navItems.filter(item => !item.parent_id).sort((a, b) => a.order - b.order);
-    console.log('Navbar topLevelNav:', filtered);
     return filtered;
   }, [navItems]);
 
