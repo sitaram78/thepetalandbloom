@@ -18,6 +18,7 @@ import { useProducts } from '@/context/ProductContext';
 import Reveal from '@/components/Reveal';
 import AdminLayout from '@/components/AdminLayout';
 import { formatPrice } from '@/data/products';
+import { occasions } from '@/data/site';
 
 interface ProductForm {
   name: string;
@@ -480,13 +481,18 @@ export default function AdminEditor() {
                   <div className="flex flex-wrap gap-3">
                     {form.occasions.map((occ, i) => (
                       <div key={i} className="flex items-center gap-2 bg-silk/20 border border-silk rounded-sm px-2 py-1">
-                        <input
-                          type="text"
+                        <select
                           value={occ}
                           onChange={(e) => handleArrayChange('occasions', i, e.target.value)}
-                          className="bg-transparent text-sm py-1 focus:outline-none w-32"
-                          placeholder="Occasion..."
-                        />
+                          className="bg-transparent text-sm py-1 focus:outline-none w-32 appearance-none cursor-pointer"
+                        >
+                          <option value="" className="bg-parchment-50 text-ink">Select Occasion...</option>
+                          {occasions.map((o) => (
+                            <option key={o.filter} value={o.filter} className="bg-parchment-50 text-ink">
+                              {o.name}
+                            </option>
+                          ))}
+                        </select>
                         <button
                           type="button"
                           onClick={() => removeArrayItem('occasions', i)}
