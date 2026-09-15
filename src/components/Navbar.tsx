@@ -169,7 +169,7 @@ export default function Navbar() {
             </button>
             <Link
               to="/wishlist"
-              className="relative text-ink-light hover:text-rose transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2 focus-visible:ring-offset-linen rounded-sm hidden sm:block"
+              className="relative text-ink-light hover:text-rose transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2 focus-visible:ring-offset-linen rounded-sm"
               aria-label={`Wishlist with ${wishlistCount} items`}
             >
               <Heart size={20} strokeWidth={1.5} />
