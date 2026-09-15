@@ -14,16 +14,14 @@ const WishlistContext = createContext<WishlistContextValue | undefined>(undefine
 const STORAGE_KEY = 'tpb-wishlist';
 
 export function WishlistProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<string[]>([]);
-
-  useEffect(() => {
+  const [items, setItems] = useState<string[]>(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) setItems(JSON.parse(stored));
+      return stored ? JSON.parse(stored) : [];
     } catch {
-      /* ignore */
+      return [];
     }
-  }, []);
+  });
 
   useEffect(() => {
     try {

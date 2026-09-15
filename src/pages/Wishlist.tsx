@@ -3,13 +3,15 @@ import { Heart, Trash2, ShoppingBag } from 'lucide-react';
 import Reveal from '@/components/Reveal';
 import { useWishlist } from '@/context/WishlistContext';
 import { useCart } from '@/context/CartContext';
-import { products, formatPrice } from '@/data/products';
+import { formatPrice } from '@/data/products';
+import { useProducts } from '@/context/ProductContext';
 import AtelierButton from '@/components/AtelierButton';
 import SEO from '@/components/SEO';
 
 export default function Wishlist() {
   const { items, removeItem } = useWishlist();
   const { addItem } = useCart();
+  const { products } = useProducts();
 
   const wishlistedProducts = products.filter((p) => items.includes(p.code));
 
