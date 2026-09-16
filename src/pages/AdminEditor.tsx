@@ -246,7 +246,6 @@ export default function AdminEditor() {
         made_to_order: form.madeToOrder,
         images: form.images.filter(img => img !== ''),
         occasions: form.occasions.filter(o => o !== ''),
-        recipients: form.recipients.filter(r => r !== ''),
         colors: form.colors.filter(c => c !== ''),
         whats_included: form.whatsIncluded.filter(w => w !== ''),
         preparation_days: form.preparationDays,
