@@ -12,13 +12,14 @@ import {
   X,
   SlidersHorizontal,
   GripVertical,
-  Palette
+  Palette,
+  Ticket
 } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
-  activePage: 'dashboard' | 'editor' | 'settings' | 'navigation' | 'assets';
+  activePage: 'dashboard' | 'editor' | 'settings' | 'navigation' | 'assets' | 'coupons';
 }
 
 export default function AdminLayout({ children, activePage }: AdminLayoutProps) {
@@ -152,6 +153,19 @@ export default function AdminLayout({ children, activePage }: AdminLayoutProps) 
           >
             <Palette size={18} />
             {!isCollapsed && <span className="text-sm">Studio Visuals</span>}
+          </Link>
+          <Link
+            to="/admin/coupons"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className={`flex items-center gap-3 px-4 py-3 rounded-sm transition-all duration-300 ${
+              activePage === 'coupons'
+                ? 'bg-white/20 text-white font-medium shadow-inner'
+                : 'hover:bg-white/10 text-white/60 hover:text-white'
+            } ${isCollapsed ? 'justify-center px-2' : ''}`}
+            title="Coupons"
+          >
+            <Ticket size={18} />
+            {!isCollapsed && <span className="text-sm">Coupons</span>}
           </Link>
         </nav>
 

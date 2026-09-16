@@ -25,6 +25,7 @@ interface ProductForm {
   code: string;
   category: string;
   price: number;
+  compareAtPrice?: number;
   description: string;
   longDescription?: string;
   bestseller: boolean;
@@ -67,7 +68,12 @@ function ProductPreview({ product }: { product: ProductForm }) {
           <h3 className="heading-serif text-xl text-ink">{product.name || 'Untitled Piece'}</h3>
           <p className="text-sm text-ink-light line-clamp-2 font-light">{product.description || 'No description provided...'}</p>
           <div className="flex items-center justify-between pt-2 border-t border-silk">
-            <span className="font-serif text-lg text-ink">{formatPrice(product.price)}</span>
+            <div>
+              <span className="font-serif text-lg text-ink">{formatPrice(product.price)}</span>
+              {product.compareAtPrice && product.compareAtPrice > product.price && (
+                <span className="ml-2 text-xs text-ink-light line-through">{formatPrice(product.compareAtPrice)}</span>
+              )}
+            </div>
             <span className="text-[10px] text-ink-light uppercase tracking-tighter">{product.category}</span>
           </div>
         </div>
@@ -100,6 +106,7 @@ export default function AdminEditor() {
     code: '',
     category: 'flowers',
     price: 0,
+    compareAtPrice: undefined,
     description: '',
     longDescription: '',
     bestseller: false,
@@ -153,6 +160,7 @@ export default function AdminEditor() {
               code: data.code || '',
               category: data.category || 'flowers',
               price: data.price || 0,
+              compareAtPrice: data.compare_at_price || undefined,
               description: data.description || '',
               longDescription: data.long_description || '',
               bestseller: !!data.bestseller,
@@ -233,11 +241,16 @@ export default function AdminEditor() {
     setIsSaved(false);
 
     try {
+      if (form.compareAtPrice !== undefined && form.compareAtPrice <= form.price) {
+        throw new Error('Compare-at price must be higher than the selling price.');
+      }
+
       const payload = {
         name: form.name,
         code: form.code,
         category: form.category,
         price: form.price,
+        compare_at_price: form.compareAtPrice || null,
         description: form.description,
         long_description: form.longDescription,
         bestseller: form.bestseller,
@@ -391,6 +404,22 @@ export default function AdminEditor() {
                       className="input-field"
                       placeholder="0"
                     />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="block text-xs uppercase tracking-wider text-ink font-medium ml-1">Compare-at Price (INR)</label>
+                    <input
+                      type="number"
+                      min={form.price || 0}
+                      value={form.compareAtPrice ?? ''}
+                      onChange={(e) => handleInputChange('compareAtPrice', e.target.value ? Number(e.target.value) : undefined)}
+                      className="input-field"
+                      placeholder="Optional legitimate reference price"
+                    />
+                    {form.compareAtPrice && form.compareAtPrice > form.price && (
+                      <p className="text-xs text-rose">
+                        {Math.round(((form.compareAtPrice - form.price) / form.compareAtPrice) * 100)}% off
+                      </p>
+                    )}
                   </div>
                 </div>
 

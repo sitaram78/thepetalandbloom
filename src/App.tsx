@@ -30,6 +30,7 @@ import AdminEditor from '@/pages/AdminEditor';
 import AdminAssets from '@/pages/admin/AdminAssets';
 import AdminNavigation from '@/pages/admin/AdminNavigation';
 import AdminSettings from '@/pages/admin/AdminSettings';
+import AdminCoupons from '@/pages/admin/AdminCoupons';
 import NotFound from '@/pages/NotFound';
 
 function AppContent() {
@@ -69,6 +70,7 @@ function AppContent() {
             <Route path="/admin/editor" element={<AdminEditor />} />
             <Route path="/admin/assets" element={<AdminAssets />} />
             <Route path="/admin/settings" element={<AdminSettings />} />
+            <Route path="/admin/coupons" element={<AdminCoupons />} />
           </Route>
         </Routes>
       </main>

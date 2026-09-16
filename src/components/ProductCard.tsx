@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Star, Sparkles, Clock, ArrowRight, Eye, Heart } from 'lucide-react';
 import type { Product } from '@/data/products';
-import { formatPrice } from '@/data/products';
+import { formatPrice, getDiscountPercent } from '@/data/products';
 import { useQuickView } from '@/context/QuickViewContext';
 import { useWishlist } from '@/context/WishlistContext';
 
@@ -78,9 +78,17 @@ export default function ProductCard({ product, variant = 'default' }: ProductCar
           </h3>
         </Link>
         <div className="flex items-center justify-between mt-1">
-          <span className="font-serif text-base text-bark">
-            {product.priceLabel || formatPrice(product.price)}
-          </span>
+          <div className="flex items-baseline gap-2 flex-wrap">
+            <span className="font-serif text-base text-bark">
+              {product.priceLabel || formatPrice(product.price)}
+            </span>
+            {product.compareAtPrice && product.compareAtPrice > product.price && (
+              <>
+                <span className="text-xs text-ink-light line-through">{formatPrice(product.compareAtPrice)}</span>
+                <span className="text-[10px] text-rose font-medium">{getDiscountPercent(product)}% off</span>
+              </>
+            )}
+          </div>
           <span className="text-[10px] text-ink-light font-mono uppercase tracking-widest">
             {product.code}
           </span>

@@ -27,9 +27,17 @@ export function customOrderMessage(): string {
   return "Hi The Petal & Bloom! I'd like to create a custom bouquet. Can you help me choose the right flowers, colours, and size?";
 }
 
-export function cartEnquiryMessage(items: { name: string; code: string; price: string; quantity: number }[]): string {
+export function cartEnquiryMessage(
+  items: { name: string; code: string; price: string; quantity: number }[],
+  details?: { name: string; pinCode: string; subtotal: number; shipping: number; discount: number; total: number; couponCode?: string }
+): string {
   const itemList = items.map((i) => `  • ${i.name} (${i.code}) — ${i.price} × ${i.quantity}`).join('\n');
-  return `Hi The Petal & Bloom! I'd like to place an enquiry for the following items:\n\n${itemList}\n\nPlease confirm availability and delivery timeline.`;
+  if (!details) {
+    return `Hi The Petal & Bloom! I'd like to place an enquiry for the following items:\n\n${itemList}\n\nPlease confirm availability and delivery timeline.`;
+  }
+
+  const couponLine = details.couponCode ? `\nCoupon: ${details.couponCode} (-₹${details.discount})` : '';
+  return `Hi The Petal & Bloom! I'd like to place an order:\n\nCustomer name: ${details.name}\nPIN code: ${details.pinCode}\n\n${itemList}${couponLine}\n\nSubtotal: ₹${details.subtotal}\nShipping: ${details.shipping === 0 ? 'Complimentary' : `₹${details.shipping}`}\nTotal: ₹${details.total}\n\nPlease confirm availability and delivery timeline.`;
 }
 
 export function giftFinderMessage(selections: { occasion: string; recipient: string; budget: string }): string {

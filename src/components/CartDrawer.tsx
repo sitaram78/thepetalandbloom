@@ -6,8 +6,17 @@ import { trackEvent } from '@/utils/analytics';
 import Reveal from '@/components/Reveal';
 
 export default function CartDrawer() {
-  const { items, isOpen, closeCart, removeItem, updateQuantity, totalItems, totalPrice, checkoutWhatsApp } = useCart();
+  const {
+    items, isOpen, closeCart, removeItem, updateQuantity, clearCart, totalItems, totalPrice,
+    appliedCoupon, discountAmount, applyCoupon, removeCoupon, checkoutWhatsApp,
+  } = useCart();
   const [justAdded, setJustAdded] = useState(false);
+  const [couponCode, setCouponCode] = useState('');
+  const [couponMessage, setCouponMessage] = useState('');
+  const [customerName, setCustomerName] = useState('');
+  const [pinCode, setPinCode] = useState('');
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [checkoutMessage, setCheckoutMessage] = useState('');
 
   useEffect(() => {
     if (isOpen && totalItems > 0) {
@@ -18,11 +27,36 @@ export default function CartDrawer() {
   }, [isOpen, totalItems]);
 
   const shippingCost = totalPrice >= 1200 ? 0 : totalPrice >= 799 ? 49 : 69;
-  const grandTotal = totalPrice + shippingCost;
+  const grandTotal = totalPrice - discountAmount + shippingCost;
 
-  const handleCheckout = () => {
+  const openCheckout = () => {
+    setCheckoutMessage('');
+    setIsCheckoutOpen(true);
+  };
+
+  const handleCheckout = (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!customerName.trim() || !/^\d{6}$/.test(pinCode.trim())) {
+      setCheckoutMessage('Enter your name and a valid 6-digit PIN code.');
+      return;
+    }
     trackEvent('checkout_started', { total: totalPrice, items: totalItems });
-    checkoutWhatsApp();
+    checkoutWhatsApp({ name: customerName.trim(), pinCode: pinCode.trim(), shipping: shippingCost });
+    clearCart();
+    setCustomerName('');
+    setPinCode('');
+    removeCoupon();
+    setCouponCode('');
+    setCouponMessage('');
+    setCheckoutMessage('');
+    setIsCheckoutOpen(false);
+    closeCart();
+  };
+
+  const handleCoupon = async () => {
+    const result = await applyCoupon(couponCode);
+    setCouponMessage(result.message);
+    if (result.success) setCouponCode('');
   };
 
   return (
@@ -114,10 +148,33 @@ export default function CartDrawer() {
               <div className="border-t border-silk px-5 py-4 space-y-3">
                 {/* Shipping breakdown */}
                 <div className="space-y-2 text-sm">
+                  <div className="flex gap-2">
+                    <input
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                      placeholder="Coupon code"
+                      className="input-field flex-1 text-sm py-2"
+                      aria-label="Coupon code"
+                    />
+                    <button type="button" onClick={handleCoupon} className="btn-secondary px-3 text-xs">Apply</button>
+                  </div>
+                  {couponMessage && <p className="text-xs text-rose">{couponMessage}</p>}
+                  {appliedCoupon && (
+                    <div className="flex justify-between text-xs text-sage-dark">
+                      <span>{appliedCoupon.code} ({appliedCoupon.discountPercent}% off)</span>
+                      <button type="button" onClick={removeCoupon} className="underline">Remove</button>
+                    </div>
+                  )}
                   <div className="flex justify-between">
                     <span className="text-ink-light">Subtotal</span>
                     <span className="text-ink">{formatPrice(totalPrice)}</span>
                   </div>
+                  {discountAmount > 0 && (
+                    <div className="flex justify-between text-sage-dark">
+                      <span>Coupon discount</span>
+                      <span>-{formatPrice(discountAmount)}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between">
                     <span className="text-ink-light flex items-center gap-1">
                       <Truck size={12} strokeWidth={1.5} /> Shipping
@@ -146,13 +203,70 @@ export default function CartDrawer() {
                     Every petal is hand-sculpted with precision and care in our studio, ensuring an heirloom piece of botanical art.
                   </p>
                 </div>
-                <button onClick={handleCheckout} className="btn-whatsapp w-full py-5 text-base">
+                <button onClick={openCheckout} className="btn-whatsapp w-full py-5 text-base">
                   <MessageCircle size={18} />
                   Order via Gift Concierge
                 </button>
               </div>
             )}
           </div>
+        </div>
+      )}
+      {isCheckoutOpen && (
+        <div className="fixed inset-0 z-[90] flex items-center justify-center p-4">
+          <button
+            type="button"
+            className="absolute inset-0 bg-ink/50 backdrop-blur-sm"
+            onClick={() => setIsCheckoutOpen(false)}
+            aria-label="Close checkout details"
+          />
+          <form
+            onSubmit={handleCheckout}
+            className="relative z-10 w-full max-w-md bg-linen p-6 sm:p-8 rounded-atelier-panel shadow-2xl"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="checkout-details-title"
+          >
+            <div className="flex items-start justify-between gap-4 mb-6">
+              <div>
+                <p className="text-xs uppercase tracking-[0.2em] text-rose mb-2">Almost there</p>
+                <h2 id="checkout-details-title" className="font-serif text-3xl text-bark">Your delivery details</h2>
+                <p className="text-sm text-ink-light mt-2">Your collection will stay saved until you submit these details.</p>
+              </div>
+              <button type="button" onClick={() => setIsCheckoutOpen(false)} className="text-ink-light hover:text-ink" aria-label="Close checkout details">
+                <X size={22} />
+              </button>
+            </div>
+            <div className="space-y-4">
+              <label className="block text-sm text-bark">
+                Your name
+                <input
+                  autoFocus
+                  required
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  placeholder="Enter your name"
+                  className="input-field mt-2 w-full"
+                />
+              </label>
+              <label className="block text-sm text-bark">
+                PIN code
+                <input
+                  required
+                  value={pinCode}
+                  onChange={(e) => setPinCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  placeholder="6-digit PIN code"
+                  inputMode="numeric"
+                  pattern="[0-9]{6}"
+                  className="input-field mt-2 w-full"
+                />
+              </label>
+            </div>
+            {checkoutMessage && <p className="text-sm text-rose mt-4">{checkoutMessage}</p>}
+            <button type="submit" className="btn-whatsapp w-full py-4 mt-6 text-base">
+              <MessageCircle size={18} /> Continue to WhatsApp
+            </button>
+          </form>
         </div>
       )}
     </>

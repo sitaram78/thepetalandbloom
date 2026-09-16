@@ -5,6 +5,7 @@ export interface Product {
   name: string;
   category: ProductCategory;
   price: number;
+  compareAtPrice?: number;
   priceLabel?: string;
   description: string;
   longDescription?: string;
@@ -20,6 +21,11 @@ export interface Product {
   images: string[];
   bouquetSize?: string;
   whatsIncluded?: string[];
+}
+
+export function getDiscountPercent(product: Pick<Product, 'price' | 'compareAtPrice'>): number {
+  if (!product.compareAtPrice || product.compareAtPrice <= product.price) return 0;
+  return Math.round(((product.compareAtPrice - product.price) / product.compareAtPrice) * 100);
 }
 
 export const products: Product[] = [

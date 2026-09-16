@@ -1,8 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { Product } from '@/data/products';
-import { getCache, setCache, removeCache } from '@/utils/cache';
-import { PRODUCTS_CACHE } from '@/utils/cacheKeys';
 
 interface ProductContextType {
   products: Product[];
@@ -21,19 +19,9 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchProducts = async (bypassCache = false) => {
+  const fetchProducts = async () => {
     setLoading(true);
     try {
-      // 1. Try to get from cache first if not bypassing
-      if (!bypassCache) {
-        const cached = getCache<Product[]>(PRODUCTS_CACHE);
-        if (cached) {
-          setProducts(cached);
-          setLoading(false);
-          return;
-        }
-      }
-
       const { data, error: supabaseError } = await supabase
         .from('products')
         .select('*');
@@ -45,6 +33,7 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
         name: p.name || 'Unnamed Piece',
         category: p.category || 'flowers',
         price: p.price || 0,
+        compareAtPrice: p.compare_at_price || undefined,
         description: p.description || '',
         longDescription: p.long_description || '',
         colors: Array.isArray(p.colors) ? p.colors : [],
@@ -60,7 +49,6 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
       }));
 
       setProducts(mappedProducts);
-      setCache(PRODUCTS_CACHE, mappedProducts);
       setError(null);
     } catch (err: any) {
       console.error('Error fetching products:', err);
@@ -83,8 +71,7 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
   const getFeatured = () => products.filter(p => p.featured);
 
   const refreshProducts = async () => {
-    removeCache(PRODUCTS_CACHE);
-    await fetchProducts(true);
+    await fetchProducts();
   };
 
   return (

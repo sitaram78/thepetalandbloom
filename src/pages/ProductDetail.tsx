@@ -4,7 +4,7 @@ import {
   ArrowLeft, Heart, ShoppingBag, Clock, Truck,
   Check, Gift, Sparkles, Star, Palette, Search
 } from 'lucide-react';
-import { formatPrice } from '@/data/products';
+import { formatPrice, getDiscountPercent } from '@/data/products';
 import { useCart } from '@/context/CartContext';
 import { useWishlist } from '@/context/WishlistContext';
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
@@ -205,9 +205,17 @@ export default function ProductDetail() {
                 <h1 className="font-serif text-5xl lg:text-6xl mb-6 leading-tight text-bark">{product.name}</h1>
 
                 <div className="flex items-center gap-6 mb-10">
-                  <span className="font-serif text-4xl text-rose-deep">
-                    {product.priceLabel || formatPrice(product.price)}
-                  </span>
+                  <div className="flex items-baseline gap-2 flex-wrap">
+                    <span className="font-serif text-4xl text-rose-deep">
+                      {product.priceLabel || formatPrice(product.price)}
+                    </span>
+                    {product.compareAtPrice && product.compareAtPrice > product.price && (
+                      <>
+                        <span className="text-sm text-ink-light line-through">{formatPrice(product.compareAtPrice)}</span>
+                        <span className="text-xs text-rose font-medium">{getDiscountPercent(product)}% off</span>
+                      </>
+                    )}
+                  </div>
                   {product.preparationDays && (
                     <span className="text-sm text-moss font-medium">
                       In the studio · ships in {product.preparationDays}
