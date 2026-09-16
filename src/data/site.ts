@@ -195,7 +195,7 @@ export const brandInfo = {
   secondaryMessage: 'Flowers that never fade. Gifts that stay.',
   instagram: '@thepetalandbloom',
   instagramUrl: 'https://instagram.com/thepetalandbloom',
-  whatsappNumber: '+919861615937',
+  whatsappNumber: '+917855033734',
   email: '',
   businessHours: 'Monday – Saturday, 10 AM – 7 PM IST',
   responseTime: 'We typically respond within a few hours during business hours.',
