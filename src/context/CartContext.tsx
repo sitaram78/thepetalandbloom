@@ -15,6 +15,7 @@ export interface AppliedCoupon {
 export interface CartItem {
   code: string;
   name: string;
+  image?: string;
   price: number;
   priceLabel?: string;
   quantity: number;
@@ -82,6 +83,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           {
             code: product.code,
             name: product.name,
+            image: product.images?.[0],
             price: product.price,
             priceLabel: product.priceLabel,
             quantity,
@@ -114,6 +116,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 {
                   code: addonCode,
                   name: suggestion.name,
+                  image: suggestion.image,
                   price: suggestion.price,
                   quantity: 1,
                 },

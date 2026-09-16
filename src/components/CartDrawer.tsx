@@ -101,6 +101,21 @@ export default function CartDrawer() {
                 <div className="space-y-4">
                   {items.map((item) => (
                     <div key={item.code + (item.color || '')} className="flex gap-4 pb-6 border-b border-silk/50">
+                      <div className="w-16 h-20 flex-shrink-0 overflow-hidden rounded-sm bg-silk/30">
+                        {item.image ? (
+                          <img
+                            src={item.image}
+                            alt=""
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                            onError={(event) => {
+                              event.currentTarget.style.display = 'none';
+                            }}
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-[10px] text-ink-light/50">No image</div>
+                        )}
+                      </div>
                       <div className="flex-1">
                         <h4 className="font-serif text-lg text-ink">{item.name}</h4>
                         <p className="text-[10px] uppercase tracking-wider text-ink-light/50 mt-0.5">{item.code}</p>
@@ -196,12 +211,6 @@ export default function CartDrawer() {
                     <span className="text-sm font-medium text-ink">Estimated total</span>
                     <span className="font-serif text-2xl text-ink">{formatPrice(grandTotal)}</span>
                   </div>
-                </div>
-                <div className="py-4 px-4 bg-silk/30 border border-silk rounded-sm mb-6 shadow-sm">
-                  <p className="text-[10px] uppercase tracking-wider text-ink-light font-semibold mb-1">Studio Guarantee</p>
-                  <p className="text-xs text-ink-light italic leading-relaxed">
-                    Every petal is hand-sculpted with precision and care in our studio, ensuring an heirloom piece of botanical art.
-                  </p>
                 </div>
                 <button onClick={openCheckout} className="btn-whatsapp w-full py-5 text-base">
                   <MessageCircle size={18} />

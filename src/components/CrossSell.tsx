@@ -19,7 +19,7 @@ export default function CrossSell() {
       category: 'gifts' as const,
       price,
       description: '',
-      images: [],
+      images: [addOns.find((addon) => addon.name === name)?.image || ''],
     };
     addItem(pseudoProduct);
     setAdded((prev) => [...prev, name]);

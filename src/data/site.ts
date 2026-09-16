@@ -140,11 +140,11 @@ export const giftingOccasions = [
 ];
 
 export const addOns = [
-  { name: 'Greeting Card', price: 49, description: 'A handwritten card to accompany your gift.' },
-  { name: 'Personalised Message', price: 39, description: 'A custom message card tucked inside your wrapping.' },
+  { name: 'Greeting Card', price: 49, description: 'A handwritten card to accompany your gift.', image: '/greeting.avif' },
+  { name: 'Personalised Message', price: 39, description: 'A custom message card tucked inside your wrapping.', image: '/message.avif' },
   { name: 'Name Customisation', price: 79, description: 'A name woven or attached to your bloom.' },
-  { name: 'Premium Ribbon', price: 49, description: 'An upgraded ribbon finish on your bouquet wrapping.' },
-  { name: 'Premium Wrapping', price: 79, description: 'Premium wrapping paper and packaging for your gift.' },
+  { name: 'Premium Ribbon', price: 49, description: 'An upgraded ribbon finish on your bouquet wrapping.', image: '/ribbon.avif' },
+  { name: 'Premium Wrapping', price: 79, description: 'Premium wrapping paper and packaging for your gift.', image: '/wrapping.avif' },
   { name: 'Extra Flower', price: 199, description: 'Add an additional bloom to any bouquet.', priceLabel: '₹199+' },
 ];
 
@@ -163,12 +163,12 @@ export const footerPolicyLinks = [
 ];
 
 export const bouquetTiers = [
-  { name: 'Little Bloom', flowers: '1 flower', price: 499, code: 'TPB-BQ-001' },
-  { name: 'Bloom Duo', flowers: '2 flowers', price: 699, code: 'TPB-BQ-002' },
-  { name: 'Trio of Petals', flowers: '3 flowers', price: 899, code: 'TPB-BQ-003', popular: true },
-  { name: 'Petal Story', flowers: '5 flowers', price: 1299, code: 'TPB-BQ-004' },
-  { name: 'Garden in Bloom', flowers: '7 flowers', price: 1599, code: 'TPB-BQ-005' },
-  { name: 'Forever Garden', flowers: '9 flowers', price: 1999, code: 'TPB-BQ-006' },
+  { name: 'Little Bloom', flowers: '1 flower', price: 199, code: 'TPB-BQ-001' },
+  { name: 'Bloom Duo', flowers: '2 flowers', price: 249, code: 'TPB-BQ-002' },
+  { name: 'Trio of Petals', flowers: '3 flowers', price: 399, code: 'TPB-BQ-003', popular: true },
+  { name: 'Petal Story', flowers: '5 flowers', price: 449, code: 'TPB-BQ-004' },
+  { name: 'Garden in Bloom', flowers: '7 flowers', price: 599, code: 'TPB-BQ-005' },
+  { name: 'Forever Garden', flowers: '9 flowers', price: 699, code: 'TPB-BQ-006' },
 ];
 
 export const instagramPosts = [
