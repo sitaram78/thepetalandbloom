@@ -238,6 +238,36 @@ export default function ProductDetail() {
                       {product.longDescription}
                     </div>
                   )}
+
+                  {(product.featured || product.bouquetSize || product.recipients?.length) && (
+                    <div className="space-y-4 pt-2">
+                      {product.featured && (
+                        <div className="inline-flex items-center gap-2 rounded-full border border-rose/30 bg-rose/5 px-3 py-1.5 text-xs uppercase tracking-[0.2em] text-rose">
+                          <Sparkles size={12} /> Featured in Collection
+                        </div>
+                      )}
+
+                      {product.bouquetSize && (
+                        <div className="text-sm text-bark">
+                          <span className="font-medium uppercase tracking-wider text-ink-light mr-2">Product size</span>
+                          {product.bouquetSize}
+                        </div>
+                      )}
+
+                      {product.recipients && product.recipients.length > 0 && (
+                        <div className="text-sm text-bark">
+                          <span className="font-medium uppercase tracking-wider text-ink-light mr-2">Ideal for</span>
+                          <div className="inline-flex flex-wrap gap-2 mt-2">
+                            {product.recipients.map((recipient) => (
+                              <span key={recipient} className="rounded-full border border-canvas-line bg-canvas px-2.5 py-1 text-xs text-bark">
+                                {recipient}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 {/* Studio Fact Sheet */}

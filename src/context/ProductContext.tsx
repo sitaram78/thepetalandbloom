@@ -49,6 +49,7 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
         longDescription: p.long_description || '',
         colors: Array.isArray(p.colors) ? p.colors : [],
         occasions: Array.isArray(p.occasions) ? p.occasions : [],
+        recipients: Array.isArray(p.recipients) ? p.recipients : [],
         whatsIncluded: Array.isArray(p.whats_included) ? p.whats_included : [],
         bestseller: !!p.bestseller,
         featured: !!p.featured,

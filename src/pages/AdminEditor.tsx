@@ -33,6 +33,7 @@ interface ProductForm {
   madeToOrder: boolean;
   images: string[];
   occasions: string[];
+  recipients: string[];
   colors: string[];
   whatsIncluded: string[];
   preparationDays?: string;
@@ -107,6 +108,7 @@ export default function AdminEditor() {
     madeToOrder: false,
     images: [''],
     occasions: [''],
+    recipients: [''],
     colors: [''],
     whatsIncluded: [''],
     preparationDays: '3-5 days',
@@ -159,6 +161,7 @@ export default function AdminEditor() {
               madeToOrder: !!data.made_to_order,
               images: Array.isArray(data.images) ? data.images : [''],
               occasions: Array.isArray(data.occasions) ? data.occasions : [''],
+              recipients: Array.isArray(data.recipients) ? data.recipients : [''],
               colors: Array.isArray(data.colors) ? data.colors : [''],
               whatsIncluded: Array.isArray(data.whats_included) ? data.whats_included : [''],
               preparationDays: data.preparation_days || '3-5 days',
@@ -181,17 +184,17 @@ export default function AdminEditor() {
     setForm(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleArrayChange = (field: 'images' | 'occasions' | 'colors' | 'whatsIncluded', index: number, value: string) => {
+  const handleArrayChange = (field: 'images' | 'occasions' | 'recipients' | 'colors' | 'whatsIncluded', index: number, value: string) => {
     const newArray = [...form[field]];
     newArray[index] = value;
     setForm(prev => ({ ...prev, [field]: newArray }));
   };
 
-  const addArrayItem = (field: 'images' | 'occasions' | 'colors' | 'whatsIncluded') => {
+  const addArrayItem = (field: 'images' | 'occasions' | 'recipients' | 'colors' | 'whatsIncluded') => {
     setForm(prev => ({ ...prev, [field]: [...prev[field], ''] }));
   };
 
-  const removeArrayItem = (field: 'images' | 'occasions' | 'colors' | 'whatsIncluded', index: number) => {
+  const removeArrayItem = (field: 'images' | 'occasions' | 'recipients' | 'colors' | 'whatsIncluded', index: number) => {
     const newArray = form[field].filter((_, i) => i !== index);
     setForm(prev => ({ ...prev, [field]: newArray }));
   };
@@ -243,6 +246,7 @@ export default function AdminEditor() {
         made_to_order: form.madeToOrder,
         images: form.images.filter(img => img !== ''),
         occasions: form.occasions.filter(o => o !== ''),
+        recipients: form.recipients.filter(r => r !== ''),
         colors: form.colors.filter(c => c !== ''),
         whats_included: form.whatsIncluded.filter(w => w !== ''),
         preparation_days: form.preparationDays,
@@ -502,6 +506,45 @@ export default function AdminEditor() {
                         </button>
                       </div>
                     ))}\n                  </div>
+                </div>
+
+                {/* Recipients */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs uppercase tracking-wider text-ink font-medium">Ideal For</label>
+                    <button
+                      type="button"
+                      onClick={() => addArrayItem('recipients')}
+                      className="text-xs text-rose hover:text-rose-dark font-medium flex items-center gap-1"
+                    >
+                      <Plus size={14} /> Add Recipient
+                    </button>
+                  </div>
+                  <div className="flex flex-wrap gap-3">
+                    {form.recipients.map((recipient, i) => (
+                      <div key={i} className="flex items-center gap-2 bg-silk/20 border border-silk rounded-sm px-2 py-1">
+                        <select
+                          value={recipient}
+                          onChange={(e) => handleArrayChange('recipients', i, e.target.value)}
+                          className="bg-transparent text-sm py-1 focus:outline-none w-32 appearance-none cursor-pointer"
+                        >
+                          <option value="" className="bg-parchment-50 text-ink">Select Recipient...</option>
+                          {['Partner', 'Friend', 'Mother', 'Sibling', 'Colleague', 'Other'].map((option) => (
+                            <option key={option} value={option} className="bg-parchment-50 text-ink">
+                              {option}
+                            </option>
+                          ))}
+                        </select>
+                        <button
+                          type="button"
+                          onClick={() => removeArrayItem('recipients', i)}
+                          className="text-ink-light hover:text-rose"
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
                 {/* Colors */}
