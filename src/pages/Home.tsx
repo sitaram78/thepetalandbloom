@@ -118,7 +118,7 @@ export default function Home() {
         }}
       />
       
-      <meta name="strix-verification" content="strix-verify-8785064481d00637b69fac4bcd98e741"></meta>
+      
 
       {/* 01. THE THESIS: Hero Section (KEEP EXACT) */}
       <section className="relative min-h-screen flex items-center justify-center bg-linen">
