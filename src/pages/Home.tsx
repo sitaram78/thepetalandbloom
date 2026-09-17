@@ -119,7 +119,7 @@ export default function Home() {
       />
       
       
-
+<meta name="barrion-site-verification" content="barrion-site-verification=7feef959c917e4e5bebebb90f0bfd047"></meta>
       {/* 01. THE THESIS: Hero Section (KEEP EXACT) */}
       <section className="relative min-h-screen flex items-center justify-center bg-linen">
         <div className="absolute inset-0">
